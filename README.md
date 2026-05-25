@@ -1,15 +1,16 @@
-# Bart's Portfolio
+# Bart van de Steeg — Portfolio
 
-Interactive portfolio site. The landing page is a rotating voxel cube — each face is a little diorama linked to a section.
+Interactive portfolio for [Bart van de Steeg](https://www.bartvandesteeg.com) (aka Burt Burlington). The landing page is a draggable voxel cube; each face is a tiny world that opens into a fullscreen section.
 
 ## Stack
 
-- **Vite + React 18 + TypeScript** — SPA, static build
-- **Three.js** via **@react-three/fiber** + **@react-three/drei** — 3D scene
-- **react-router v6** — `/about`, `/projects`, etc.
-- **framer-motion** — page overlay fade/slide
-- **Tailwind CSS** — UI styling
-- **Docker** (multi-stage → nginx) — production container
+- **Vite 5 + React 18 + TypeScript** — SPA, static build
+- **Three.js** via **@react-three/fiber** + **@react-three/drei** — 3D scene & GLB loading
+- **react-router v6** — `/home`, `/about`, `/screenwriting`, `/film`, `/comedy`, `/esports`
+- **framer-motion** — page overlay + HUD transitions
+- **Tailwind CSS** — UI styling (Fraunces / Inter / JetBrains Mono)
+- **Docker** (node-alpine build → nginx-alpine serve) — production container
+- **GitHub Actions → GHCR → Portainer** — auto-publish pipeline
 
 ## Local development
 
@@ -18,16 +19,14 @@ npm install
 npm run dev      # → http://localhost:5173
 ```
 
-Hot-reload, opens the cube on `/`.
-
-## Production build
+Hot-reload. Type-check + production build:
 
 ```bash
 npm run build    # outputs to ./dist
-npm run preview  # serves ./dist locally on port 4173
+npm run preview  # serves ./dist locally on :4173
 ```
 
-## Running in Docker
+## Running the production container locally
 
 ```bash
 docker build -t bart-portfolio .
@@ -35,72 +34,109 @@ docker run --rm -p 8080:80 bart-portfolio
 # → http://localhost:8080
 ```
 
-## Deploying to Portainer (Hetzner)
+## Deploy pipeline
 
-1. Push this repo somewhere Portainer can reach (GitHub / Gitea / etc).
-2. In Portainer → **Stacks → Add stack**.
-3. Choose **Repository**, point it at your repo, set the compose file to `docker-compose.yml`.
-4. Deploy. Portainer will build the image and run it on port `8080` of the host.
-5. Point your reverse proxy (Traefik / nginx / Caddy) at that port.
+```
+git push → Actions (.github/workflows/publish.yml) → ghcr.io/tjerkz/bart-portfolio
+                                                                ↓
+                                  Watchtower polls every 5 min ←┘
+                                                                ↓
+                                  Portainer restarts container
+                                                                ↓
+                                  Traefik (HTTPS) → bartvandesteeg.com
+```
 
-Alternative: build locally, push the image to a registry (GHCR / Docker Hub), then set `image:` in `docker-compose.yml` and use that instead of `build:`.
+### One-time setup
+
+1. **Push to GitHub.** Create a public repo at `github.com/TjerkZ/bart-portfolio` (or whatever name — just update `image:` in `docker-compose.yml` to match):
+
+   ```bash
+   git remote add origin git@github.com:TjerkZ/bart-portfolio.git
+   git branch -m master main
+   git push -u origin main
+   ```
+
+2. **First Actions run** kicks off automatically. It logs into GHCR with the built-in `GITHUB_TOKEN` and pushes the image. Watch progress under the repo's **Actions** tab.
+
+3. **Make the GHCR package public.** By default GHCR packages are private. After the first push:
+   - Go to `https://github.com/users/TjerkZ/packages/container/bart-portfolio/settings`
+   - Change visibility to **Public**
+   - This means Portainer can pull without credentials.
+
+4. **Hetzner — assumptions about your Traefik setup:**
+   - There's an external Docker network named `traefik` that Traefik joins
+   - Traefik has an entrypoint named `websecure` (HTTPS, :443)
+   - Traefik has a cert resolver named `letsencrypt`
+   - If your names differ, edit the labels in [docker-compose.yml](docker-compose.yml).
+
+5. **Create the Portainer stack.** Portainer → **Stacks → Add stack** → **Web editor** → paste the contents of [docker-compose.yml](docker-compose.yml) → **Deploy the stack**.
+
+6. **DNS.** Point `bartvandesteeg.com` (A record) at the Hetzner host's public IP. Traefik will request a Let's Encrypt cert automatically on first hit.
+
+### Subsequent deploys
+
+Just `git push` to `main`. Actions builds, GHCR stores, Watchtower pulls within ~5 minutes and restarts the container. Zero clicks.
+
+To force-deploy immediately, in Portainer → **Stacks → bart-portfolio → Update the stack → Re-pull image**.
 
 ## Project layout
 
 ```
 src/
-  App.tsx                  routes + persistent canvas
-  main.tsx                 React + Router root
-  index.css                Tailwind directives + globals
+  App.tsx                   routes + persistent canvas + Dock mount
+  main.tsx                  React + Router root
+  index.css                 Tailwind directives, sky bg, message bubble
   scene/
-    SceneCanvas.tsx        <Canvas>, lights, fog
-    RotatingCube.tsx       cube group, idle spin, settle-on-route
-    Face.tsx               one face: plane + diorama + word label
-    CameraController.tsx   lerps camera to the active face
-    faces.ts               6-face config (label, path, normal, color, diorama)
-    dioramas/              placeholder voxel scenes (1 file per face)
+    SceneCanvas.tsx         <Canvas>, lights, fog (transparent over sky)
+    RotatingCube.tsx        cube group, drag-rotate, tilted idle spin,
+                             settle-on-route, front-face tracking
+    Face.tsx                one face: plane + diorama + hover tooltip
+    CameraController.tsx    lerps camera to the active face
+    GLBDiorama.tsx          auto-fits any .glb to fit the face
+    DragContext.ts          shared drag flag (suppresses click-to-nav)
+    frontFaceStore.ts       which face is facing the camera (for HUD)
+    faces.ts                6-face config (label, path, normal, color,
+                             texture, tooltip, diorama)
+    dioramas/               one component per face that renders the GLB
   components/
-    PageOverlay.tsx        framer-motion card that hosts page content
-  pages/                   one file per route + HomeHint for "/"
+    PageOverlay.tsx         fullscreen overlay with per-vibe theming
+    Dock.tsx                bottom-center menu, always visible
+    FaceTitleHUD.tsx        top-center live title of the front face
+  pages/                    one file per route (+ HomeHint for "/")
 public/
+  models/                   *.glb voxel dioramas (one per face)
+  textures/                 tileable face textures (grass, carpet, gunk)
+  images/                   real photo content for the page overlays
   favicon.svg
-Dockerfile                 node-alpine build → nginx-alpine serve
-docker-compose.yml         Portainer-ready stack
-nginx.conf                 SPA fallback + cache headers + gzip
+.github/workflows/
+  publish.yml               build + push image to GHCR on push to main
+Dockerfile                  node-alpine build → nginx-alpine serve
+docker-compose.yml          Portainer stack (image from GHCR, Traefik,
+                             Watchtower)
+nginx.conf                  SPA fallback + cache headers + gzip
 ```
 
-## Renaming the 6 sections
+## Swapping content
 
-Edit a single file: `src/scene/faces.ts`. Each entry has `id`, `label`, `path`, and a `Diorama` component. To rename "Blog" to "Notes":
+| You want to… | Edit |
+|---|---|
+| Add an update to the Home timeline | `src/pages/HomePage.tsx` (`updates` array) |
+| Rename a section / change cube colors | `src/scene/faces.ts` |
+| Tweak how a .glb sits on its face | `fit` / `yNudge` / `yawNudge` props in the relevant `src/scene/dioramas/*Diorama.tsx` |
+| Replace a face texture | drop a tileable image at `public/textures/<name>.{png,jpg}`, point `texture:` at it in `faces.ts` |
+| Add a film | `src/pages/FilmPage.tsx` (`films` / `promos` arrays) |
+| Add a script thumbnail | drop into `public/images/scripts/thumbnails/` and add an entry in `ScreenwritingPage.tsx` |
+| Change the per-page theme | colors / decorations live in `VIBE_STYLES` in `src/components/PageOverlay.tsx` |
 
-1. Change `label: 'Blog'` → `'Notes'` and `path: '/blog'` → `'/notes'`.
-2. Add a matching `<Route path="/notes" …>` in `src/App.tsx`.
-3. (Optional) Rename the `BlogPage` and `BlogDiorama` files.
+## Known gaps
 
-## Swapping the placeholder voxel scenes for real models
+- **No tests yet.** Add Vitest when there's logic worth testing.
+- **No video content shipped.** The Behance source folder contains `.mp4`s (DAF, DOE040, Answering Machine, Audiobook) — they'll need a `<video>` UI to add.
+- **No PDFs shipped.** The script vault shows thumbnails only — make scripts downloadable by dropping the PDFs in `public/scripts/` and linking them.
+- **No SEO meta per route.** Single static `<title>` for now.
+- **No analytics.** Add Plausible / Umami when you want it.
+- **Images uncompressed.** ~50 MB total in `public/images/` — run through `squoosh.app` or `imagemin` before launch.
 
-Each diorama is currently hand-coded with `<boxGeometry>` primitives in `src/scene/dioramas/*.tsx`. To replace one with a MagicaVoxel export:
+## Asset attribution
 
-1. Model the scene in MagicaVoxel.
-2. Export as `.glb` (File → Export → glTF Binary).
-3. Drop it into `public/models/about.glb` (etc).
-4. Replace the diorama component body with:
-
-   ```tsx
-   import { useGLTF } from '@react-three/drei';
-   useGLTF.preload('/models/about.glb');
-
-   export function AboutDiorama() {
-     const { scene } = useGLTF('/models/about.glb');
-     return <primitive object={scene.clone()} scale={0.05} />;
-   }
-   ```
-
-   Tweak `scale` and add a `position={[…]}` so the model sits nicely on the face.
-
-## What's intentionally not here yet
-
-- No tests (add Vitest when there's logic worth testing).
-- No CMS for blog posts — `src/pages/BlogPage.tsx` holds an inline array.
-- No SEO meta per route (single static `<title>` for now).
-- No analytics. Add Plausible / Umami if you want it.
+Voxel models and other CC-BY assets are credited in [`notes.md`](notes.md).
