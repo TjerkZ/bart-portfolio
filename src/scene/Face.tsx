@@ -3,7 +3,7 @@ import { Html, useTexture } from '@react-three/drei';
 import { useState } from 'react';
 import { RepeatWrapping, SRGBColorSpace } from 'three';
 import type { FaceConfig } from './faces';
-import { CUBE_SIZE, FACE_OFFSET } from './faces';
+import { FACE_OFFSET, FACE_PLANE_SIZE } from './faces';
 import { useDrag } from './DragContext';
 
 interface FaceProps {
@@ -64,7 +64,7 @@ export function Face({ config }: FaceProps) {
       }}
     >
       <mesh rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
-        <planeGeometry args={[CUBE_SIZE, CUBE_SIZE]} />
+        <planeGeometry args={[FACE_PLANE_SIZE, FACE_PLANE_SIZE]} />
         {texture ? (
           <TexturedFaceMaterial
             url={texture}

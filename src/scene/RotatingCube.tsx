@@ -3,8 +3,9 @@ import { useFrame, useThree } from '@react-three/fiber';
 import type { ThreeEvent } from '@react-three/fiber';
 import { useLocation } from 'react-router-dom';
 import * as THREE from 'three';
+import { RoundedBox } from '@react-three/drei';
 import { Face } from './Face';
-import { FACES } from './faces';
+import { FACES, CUBE_SIZE, CUBE_RADIUS } from './faces';
 import type { FaceId } from './faces';
 import { DragContext } from './DragContext';
 import { setFrontFace } from './frontFaceStore';
@@ -114,10 +115,15 @@ export function RotatingCube() {
   return (
     <DragContext.Provider value={dragValue}>
       <group ref={groupRef} onPointerDown={handlePointerDown}>
-        <mesh castShadow receiveShadow>
-          <boxGeometry args={[1.998, 1.998, 1.998]} />
+        <RoundedBox
+          args={[CUBE_SIZE - 0.01, CUBE_SIZE - 0.01, CUBE_SIZE - 0.01]}
+          radius={CUBE_RADIUS}
+          smoothness={4}
+          castShadow
+          receiveShadow
+        >
           <meshStandardMaterial color="#f3e7cf" />
-        </mesh>
+        </RoundedBox>
         {FACES.map((face) => (
           <Face key={face.id} config={face} />
         ))}

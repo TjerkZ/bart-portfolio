@@ -7,7 +7,11 @@ import { ComedyDiorama } from './dioramas/ComedyDiorama';
 import { EsportsDiorama } from './dioramas/EsportsDiorama';
 
 export const CUBE_SIZE = 2;
+export const CUBE_RADIUS = 0.15;
 export const FACE_OFFSET = CUBE_SIZE / 2;
+/** Size of the colored/textured "sticker" sitting on each face — sized to fit
+ *  the flat region of the rounded box, leaving rounded corners visible. */
+export const FACE_PLANE_SIZE = CUBE_SIZE - CUBE_RADIUS * 2;
 
 export type FaceId =
   | 'home'
@@ -58,7 +62,9 @@ export const FACES: FaceConfig[] = [
     path: '/about',
     normal: [1, 0, 0],
     rotation: [0, 0, -Math.PI / 2],
-    color: '#f7d8a3',
+    color: '#ffffff',
+    texture: '/textures/About_me_contact.png',
+    textureRepeat: 1,
     tooltip: 'Curious who Bart is? Step inside.',
     Diorama: AboutDiorama,
   },
