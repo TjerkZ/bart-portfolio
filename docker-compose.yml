@@ -1,17 +1,14 @@
-# Portainer-ready stack for bartvandesteeg.com
+# Portainer-ready stack for bart.wanderingwhale.dev
 #
-# Assumes the following on the host:
-#   - An external Docker network called `traefik` that Traefik also joins
-#   - Traefik exposes an entrypoint `websecure` (HTTPS, :443)
-#   - Traefik has a cert resolver called `letsencrypt`
-# If your Traefik uses different names, change the labels below to match.
+# Assumes the host runs Traefik with:
+#   - an external network named `proxy`
+#   - an entrypoint named `websecure` (HTTPS, :443)
+#   - a cert resolver named `myresolver`
+# Adjust the labels below if any of those names differ.
 #
-# To deploy:
-#   1. Push code to GitHub  → Actions builds + pushes the image to GHCR
-#   2. In Portainer → Stacks → Add stack → paste this file → Deploy
-#   3. Watchtower auto-pulls new :latest images and restarts the container
-#      (~5 min poll). Comment out the watchtower service if you already
-#      run a global Watchtower instance.
+# Deploys are manual: rebuild + push via `git push origin main`, then
+# in Portainer → Stacks → bart-portfolio → "Update the stack" with
+# "Re-pull image" checked. No Watchtower.
 
 services:
   portfolio:
@@ -19,29 +16,15 @@ services:
     container_name: bart-portfolio
     restart: unless-stopped
     networks:
-      - traefik
+      - proxy
     labels:
       - traefik.enable=true
-      - traefik.docker.network=traefik
-      - traefik.http.routers.bart-portfolio.rule=Host(`bartvandesteeg.com`)
+      - traefik.docker.network=proxy
+      - traefik.http.routers.bart-portfolio.rule=Host(`bart.wanderingwhale.dev`)
       - traefik.http.routers.bart-portfolio.entrypoints=websecure
-      - traefik.http.routers.bart-portfolio.tls=true
-      - traefik.http.routers.bart-portfolio.tls.certresolver=letsencrypt
+      - traefik.http.routers.bart-portfolio.tls.certresolver=myresolver
       - traefik.http.services.bart-portfolio.loadbalancer.server.port=80
-      # Tell Watchtower to manage this container
-      - com.centurylinklabs.watchtower.enable=true
-
-  watchtower:
-    image: containrrr/watchtower:latest
-    container_name: bart-portfolio-watchtower
-    restart: unless-stopped
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-    command:
-      - --interval=300
-      - --cleanup
-      - --label-enable
 
 networks:
-  traefik:
+  proxy:
     external: true
