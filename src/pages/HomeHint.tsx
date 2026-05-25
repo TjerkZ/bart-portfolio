@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion';
+import { FaceTitleHUD } from '../components/FaceTitleHUD';
 
 export function HomeHint() {
   return (
@@ -9,6 +10,7 @@ export function HomeHint() {
       transition={{ duration: 0.8, delay: 0.3 }}
       className="fixed inset-0 z-10 pointer-events-none"
     >
+      <FaceTitleHUD />
       {/* Top-left brand */}
       <div className="absolute top-5 left-5 pointer-events-auto inline-flex flex-col gap-0.5 px-4 py-2.5 rounded-2xl bg-white/80 backdrop-blur-md border border-white/60 shadow-soft">
         <span className="font-display font-black text-base md:text-lg text-ink leading-none tracking-tight">

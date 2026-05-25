@@ -33,6 +33,8 @@ export interface FaceConfig {
   texture?: string;
   /** How many times the texture tiles across the 2x2 face. 1 = once, 4 = 4×4 grid. */
   textureRepeat?: number;
+  /** Short text-message-style tooltip shown on hover (5–10 words). */
+  tooltip: string;
   /** Diorama component that sits on the face. Swap with a useGLTF loader later. */
   Diorama: ComponentType;
 }
@@ -47,6 +49,7 @@ export const FACES: FaceConfig[] = [
     color: '#ffffff',
     texture: '/textures/grass.png',
     textureRepeat: 4,
+    tooltip: 'Welcome in — latest updates live here 🏡',
     Diorama: HomeDiorama,
   },
   {
@@ -56,6 +59,7 @@ export const FACES: FaceConfig[] = [
     normal: [1, 0, 0],
     rotation: [0, 0, -Math.PI / 2],
     color: '#f7d8a3',
+    tooltip: 'Curious who Bart is? Step inside.',
     Diorama: AboutDiorama,
   },
   {
@@ -67,6 +71,7 @@ export const FACES: FaceConfig[] = [
     color: '#ffffff',
     texture: '/textures/carpet.png',
     textureRepeat: 1,
+    tooltip: 'The scripts behind the films ✍️',
     Diorama: ScreenwritingDiorama,
   },
   {
@@ -76,6 +81,7 @@ export const FACES: FaceConfig[] = [
     normal: [0, 1, 0],
     rotation: [0, 0, 0],
     color: '#a988b8',
+    tooltip: 'Short films, music videos, promo work 🎬',
     Diorama: FilmDiorama,
   },
   {
@@ -85,6 +91,7 @@ export const FACES: FaceConfig[] = [
     normal: [0, 0, -1],
     rotation: [-Math.PI / 2, 0, 0],
     color: '#d4707b',
+    tooltip: 'Stand-up, sketches, and Bad Writers 🎤',
     Diorama: ComedyDiorama,
   },
   {
@@ -96,10 +103,15 @@ export const FACES: FaceConfig[] = [
     color: '#ffffff',
     texture: '/textures/gamergunk.png',
     textureRepeat: 4,
+    tooltip: 'Counter-Strike obsession — Burt Burlington 🎮',
     Diorama: EsportsDiorama,
   },
 ];
 
 export function findFaceByPath(path: string): FaceConfig | undefined {
   return FACES.find((f) => f.path === path);
+}
+
+export function findFaceById(id: FaceId): FaceConfig | undefined {
+  return FACES.find((f) => f.id === id);
 }

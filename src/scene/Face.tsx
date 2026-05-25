@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { Text, useTexture } from '@react-three/drei';
+import { Html, useTexture } from '@react-three/drei';
 import { useState } from 'react';
 import { RepeatWrapping, SRGBColorSpace } from 'three';
 import type { FaceConfig } from './faces';
@@ -10,10 +10,6 @@ interface FaceProps {
   config: FaceConfig;
 }
 
-/**
- * Material that tiles a texture across the face. Multiplies `tint` over the
- * texture; pass white to see the texture untinted.
- */
 function TexturedFaceMaterial({
   url,
   repeat,
@@ -89,18 +85,17 @@ export function Face({ config }: FaceProps) {
         <Diorama />
       </group>
 
-      <Text
-        position={[0, 0.02, -0.7]}
-        rotation={[-Math.PI / 2, 0, 0]}
-        fontSize={0.22}
-        color="#1a1a2e"
-        anchorX="center"
-        anchorY="middle"
-        outlineWidth={0.005}
-        outlineColor="#ffffff"
-      >
-        {config.label}
-      </Text>
+      {hovered && (
+        <Html
+          position={[0, 1.7, 0]}
+          center
+          distanceFactor={5}
+          zIndexRange={[10, 0]}
+          style={{ pointerEvents: 'none' }}
+        >
+          <div className="message-bubble">{config.tooltip}</div>
+        </Html>
+      )}
     </group>
   );
 }

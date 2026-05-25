@@ -1,11 +1,13 @@
 import { useRef, useState, useEffect, useMemo, useCallback } from 'react';
-import { useFrame } from '@react-three/fiber';
+import { useFrame, useThree } from '@react-three/fiber';
 import type { ThreeEvent } from '@react-three/fiber';
 import { useLocation } from 'react-router-dom';
 import * as THREE from 'three';
 import { Face } from './Face';
 import { FACES } from './faces';
+import type { FaceId } from './faces';
 import { DragContext } from './DragContext';
+import { setFrontFace } from './frontFaceStore';
 
 const DRAG_SENSITIVITY = 0.006;
 const DRAG_THRESHOLD_PX = 5;
@@ -15,12 +17,13 @@ export function RotatingCube() {
   const groupRef = useRef<THREE.Group>(null);
   const location = useLocation();
   const onHome = location.pathname === '/';
+  const { camera } = useThree();
 
   const [isDragging, setIsDragging] = useState(false);
   const wasDragRef = useRef(false);
   const dragMovedRef = useRef(0);
+  const lastFrontId = useRef<FaceId | null>(null);
 
-  // Reusable math objects to avoid per-frame allocations.
   const idleAxis = useMemo(
     () => new THREE.Vector3(0.3, 1, 0.05).normalize(),
     [],
@@ -28,9 +31,9 @@ export function RotatingCube() {
   const worldX = useMemo(() => new THREE.Vector3(1, 0, 0), []);
   const worldY = useMemo(() => new THREE.Vector3(0, 1, 0), []);
   const identityQuat = useMemo(() => new THREE.Quaternion(), []);
+  const tmpNormal = useMemo(() => new THREE.Vector3(), []);
+  const cameraDir = useMemo(() => new THREE.Vector3(), []);
 
-  // Window-level listeners during drag so the rotation keeps working
-  // even when the pointer leaves the cube's hit-volume.
   useEffect(() => {
     if (!isDragging) return;
 
@@ -46,8 +49,6 @@ export function RotatingCube() {
 
     const onUp = () => {
       setIsDragging(false);
-      // Hold the "was dragging" flag long enough for R3F to fire the
-      // synthetic click that would otherwise navigate.
       window.setTimeout(() => {
         wasDragRef.current = false;
       }, CLICK_GUARD_MS);
@@ -76,15 +77,32 @@ export function RotatingCube() {
   useFrame((_, delta) => {
     const group = groupRef.current;
     if (!group) return;
+
     if (onHome) {
       if (!isDragging) {
-        // Spin around a tilted world axis so every face — including the
-        // bottom — drifts into view over time.
         group.rotateOnWorldAxis(idleAxis, delta * 0.22);
       }
     } else {
-      // Settle back to identity so the active face lines up with the camera.
       group.quaternion.slerp(identityQuat, Math.min(1, delta * 3));
+    }
+
+    // Compute which face's outward normal is most anti-parallel to camera look.
+    camera.getWorldDirection(cameraDir);
+    let bestId: FaceId | null = null;
+    let bestDot = Infinity;
+    for (const face of FACES) {
+      tmpNormal
+        .set(face.normal[0], face.normal[1], face.normal[2])
+        .applyQuaternion(group.quaternion);
+      const dot = tmpNormal.dot(cameraDir);
+      if (dot < bestDot) {
+        bestDot = dot;
+        bestId = face.id;
+      }
+    }
+    if (bestId !== lastFrontId.current) {
+      lastFrontId.current = bestId;
+      setFrontFace(bestId);
     }
   });
 
@@ -96,7 +114,6 @@ export function RotatingCube() {
   return (
     <DragContext.Provider value={dragValue}>
       <group ref={groupRef} onPointerDown={handlePointerDown}>
-        {/* Solid backing so any seam between face planes reads as cube material, not sky */}
         <mesh castShadow receiveShadow>
           <boxGeometry args={[1.998, 1.998, 1.998]} />
           <meshStandardMaterial color="#f3e7cf" />
