@@ -7,7 +7,8 @@ interface Film {
   logline: string;
   role: string;
   watch?: { label: string; href: string };
-  imageNote: string;
+  images: string[];
+  cover: string;
 }
 
 const films: Film[] = [
@@ -19,7 +20,8 @@ const films: Film[] = [
       'Fazmagoo, a dimension-hopping cosmic wizard cursed with accompanying the most miserable people in the world, takes on Gregory — a deeply insecure man struggling to come to terms with the fact that his girlfriend\'s ex was extremely well-endowed.',
     role: 'Writer · Director · Producer',
     watch: { label: 'fazmagoo.com', href: 'https://www.fazmagoo.com' },
-    imageNote: 'TODO: hero still',
+    cover: '/images/updates/20-05-2026.png',
+    images: [],
   },
   {
     title: 'My Joint with John',
@@ -29,7 +31,15 @@ const films: Film[] = [
       'Following a devastating pitch, a struggling writer smokes a joint with his best friend — leading to a conversation that alters their lives forever.',
     role: 'Co-writer · Producer · Director · Editor',
     watch: { label: 'Watch the teaser', href: '#' },
-    imageNote: 'TODO: stills MJWJ 1-6.jpeg',
+    cover: '/images/films/mjwj/mjwj-1.jpeg',
+    images: [
+      '/images/films/mjwj/mjwj-1.jpeg',
+      '/images/films/mjwj/mjwj-2.jpeg',
+      '/images/films/mjwj/mjwj-3.jpeg',
+      '/images/films/mjwj/mjwj-4.jpeg',
+      '/images/films/mjwj/mjwj-5.jpeg',
+      '/images/films/mjwj/mjwj-6.jpeg',
+    ],
   },
   {
     title: 'Passion of the Chris',
@@ -42,7 +52,12 @@ const films: Film[] = [
       label: 'Watch on YouTube',
       href: 'https://www.youtube.com/watch?v=KS_vc3duufE',
     },
-    imageNote: 'TODO: stills POTC 1-3.png',
+    cover: '/images/films/potc/potc-1.png',
+    images: [
+      '/images/films/potc/potc-1.png',
+      '/images/films/potc/potc-2.png',
+      '/images/films/potc/potc-3.png',
+    ],
   },
 ];
 
@@ -52,6 +67,7 @@ interface PromoSpot {
   title: string;
   contribution: string;
   watch?: { label: string; href: string };
+  images: string[];
 }
 
 const promos: PromoSpot[] = [
@@ -61,6 +77,10 @@ const promos: PromoSpot[] = [
     title: 'Holiday Greetings — Corporate video',
     contribution: 'Writing · Producing · Directing',
     watch: { label: 'Watch it', href: '#' },
+    images: [
+      '/images/promo/daf/daf-thumbnail-1.png',
+      '/images/promo/daf/daf-thumbnail-2.png',
+    ],
   },
   {
     client: 'DOE040',
@@ -68,22 +88,37 @@ const promos: PromoSpot[] = [
     title: 'Promotional video — democratic school',
     contribution: 'Writing · Producing · Directing',
     watch: { label: 'Watch it', href: '#' },
+    images: [
+      '/images/promo/doe040/doe040-1.jpg',
+      '/images/promo/doe040/doe040-2.jpg',
+      '/images/promo/doe040/doe040-3.jpg',
+      '/images/promo/doe040/doe040-4.jpg',
+    ],
   },
   {
     client: 'JUMBO Supermarkets',
     year: '2021',
     title: 'Promotional campaign',
     contribution: 'Project manager · Graphic design',
+    images: [
+      '/images/promo/jumbo/jumbo-1.jpeg',
+      '/images/promo/jumbo/jumbo-2.jpeg',
+      '/images/promo/jumbo/jumbo-3.jpeg',
+      '/images/promo/jumbo/jumbo-4.jpeg',
+    ],
   },
 ];
 
 function FilmEntry({ f }: { f: Film }) {
   return (
     <article className="space-y-4">
-      <div className="aspect-video w-full rounded-xl border border-white/10 bg-white/[0.04] flex items-center justify-center">
-        <span className="font-mono text-xs text-white/40 tracking-wider uppercase">
-          {f.imageNote}
-        </span>
+      <div className="aspect-video w-full rounded-xl border border-white/10 bg-black overflow-hidden">
+        <img
+          src={f.cover}
+          alt={f.title}
+          loading="lazy"
+          className="block w-full h-full object-cover"
+        />
       </div>
       <div className="flex flex-wrap items-baseline justify-between gap-3">
         <h3 className="font-display font-black text-3xl md:text-4xl">
@@ -106,6 +141,20 @@ function FilmEntry({ f }: { f: Film }) {
         >
           {f.watch.label} <span aria-hidden>↗</span>
         </a>
+      )}
+      {f.images.length > 1 && (
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-2 pt-2">
+          {f.images.slice(1).map((src) => (
+            <div key={src} className="aspect-video bg-black rounded overflow-hidden">
+              <img
+                src={src}
+                alt=""
+                loading="lazy"
+                className="block w-full h-full object-cover"
+              />
+            </div>
+          ))}
+        </div>
       )}
     </article>
   );
@@ -132,20 +181,24 @@ export function FilmPage() {
         <p className="text-[#f6f1e6]/60 mb-8 max-w-2xl">
           Commercial pieces shot for brands and institutions.
         </p>
-        <ul className="space-y-1 rounded-2xl overflow-hidden bg-white/[0.04] border border-white/10">
+        <div className="space-y-10">
           {promos.map((p) => (
-            <li
+            <article
               key={p.client + p.title}
-              className="px-5 py-5 border-b border-white/10 last:border-b-0 flex flex-wrap items-baseline gap-x-6 gap-y-1"
+              className="rounded-2xl bg-white/[0.04] border border-white/10 p-5 md:p-6 space-y-4"
             >
-              <span className="font-display font-bold text-lg">{p.client}</span>
-              <span className="text-[#f6f1e6]/75 flex-1 min-w-[14rem]">
-                {p.title}
-              </span>
-              <span className="font-mono text-[10px] tracking-[0.2em] uppercase text-[#e8b94a]">
-                {p.year}
-              </span>
-              <span className="w-full font-mono text-xs text-[#f6f1e6]/55 uppercase tracking-wider">
+              <div className="flex flex-wrap items-baseline gap-x-6 gap-y-1">
+                <span className="font-display font-bold text-xl md:text-2xl">
+                  {p.client}
+                </span>
+                <span className="text-[#f6f1e6]/75 flex-1 min-w-[14rem]">
+                  {p.title}
+                </span>
+                <span className="font-mono text-[10px] tracking-[0.2em] uppercase text-[#e8b94a]">
+                  {p.year}
+                </span>
+              </div>
+              <p className="font-mono text-xs text-[#f6f1e6]/55 uppercase tracking-wider">
                 {p.contribution}
                 {p.watch && (
                   <>
@@ -160,10 +213,22 @@ export function FilmPage() {
                     </a>
                   </>
                 )}
-              </span>
-            </li>
+              </p>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+                {p.images.map((src) => (
+                  <div key={src} className="aspect-video bg-black rounded overflow-hidden">
+                    <img
+                      src={src}
+                      alt=""
+                      loading="lazy"
+                      className="block w-full h-full object-cover"
+                    />
+                  </div>
+                ))}
+              </div>
+            </article>
           ))}
-        </ul>
+        </div>
       </section>
     </PageOverlay>
   );

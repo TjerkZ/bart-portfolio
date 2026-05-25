@@ -87,7 +87,16 @@ export function EsportsPage() {
           </a>
         </article>
 
-        <article className="rounded-2xl border border-[#41e1c7]/25 bg-white/[0.04] p-6 md:p-8">
+        <article className="rounded-2xl border border-[#41e1c7]/25 bg-white/[0.04] overflow-hidden">
+          <div className="aspect-video bg-black">
+            <img
+              src="/images/esports/counter-shots.png"
+              alt="Counter-Shots podcast key art"
+              loading="lazy"
+              className="block w-full h-full object-cover"
+            />
+          </div>
+          <div className="p-6 md:p-8">
           <p className="font-mono text-[10px] tracking-[0.22em] uppercase text-[#41e1c7] mb-3">
             The podcast
           </p>
@@ -107,6 +116,7 @@ export function EsportsPage() {
           >
             Join the discord <span aria-hidden>↗</span>
           </a>
+          </div>
         </article>
       </section>
 

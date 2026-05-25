@@ -8,3 +8,7 @@ dist/
 .idea/
 *.log
 *.tsbuildinfo
+
+# Source content delivered by Bart — kept locally, never committed.
+# Web-ready copies live in public/images/.
+Bart van de Steeg Website 2026 Content/
