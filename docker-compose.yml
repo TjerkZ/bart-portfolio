@@ -1,0 +1,11 @@
+# Drop this into a Portainer stack.
+# Option A — Portainer builds from a git-cloned repo:  uncomment `build: .`
+# Option B — pull a pre-built image you pushed to a registry: set `image:` accordingly
+services:
+  portfolio:
+    build: .
+    # image: ghcr.io/<your-user>/bart-portfolio:latest
+    container_name: bart-portfolio
+    restart: unless-stopped
+    ports:
+      - "8080:80"

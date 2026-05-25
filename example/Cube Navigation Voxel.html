@@ -1,0 +1,1535 @@
+<!doctype html>
+<html lang="nl">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>BVDS — Voxel Cube</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    --bg-top:#a4d8ff;
+    --bg-bot:#fbd3b6;
+    --ink:#1a1f2e;
+    --ink-soft:#3b4360;
+    --paper:#fff8ef;
+    --shadow: 0 14px 30px -10px rgba(20,30,60,.25), 0 4px 10px -4px rgba(20,30,60,.15);
+  }
+  *,*::before,*::after{ box-sizing:border-box; }
+  html,body{
+    margin:0; padding:0; height:100%; overflow:hidden;
+    background:
+      radial-gradient(120% 80% at 50% 90%, var(--bg-bot) 0%, var(--bg-top) 60%, #88c6ff 100%);
+    color:var(--ink);
+    font-family:"Inter",system-ui,sans-serif;
+    user-select:none;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  /* soft floating cloud blobs (no scanlines, just clean sky) */
+  .cloud{
+    position:fixed; z-index:1; pointer-events:none;
+    background:#ffffff; opacity:.85;
+    border-radius:200px;
+    filter:blur(1px);
+  }
+
+  /* canvas */
+  #stage{
+    position:fixed; inset:0; width:100%; height:100%;
+    z-index:2;
+    cursor:grab;
+    touch-action:none;
+  }
+  #stage.dragging{ cursor:grabbing; }
+  #stage.zooming{ cursor:default; }
+
+  /* ─────────── HUD (modern, friendly) ─────────── */
+  .hud{ position:fixed; inset:0; z-index:10; pointer-events:none; }
+  .hud .pill{
+    position:absolute; pointer-events:auto;
+    display:inline-flex; align-items:center; gap:10px;
+    padding:10px 16px;
+    background:rgba(255,255,255,.78);
+    backdrop-filter:blur(14px);
+    -webkit-backdrop-filter:blur(14px);
+    border:1px solid rgba(255,255,255,.6);
+    border-radius:18px;
+    box-shadow:var(--shadow);
+    font-family:"Inter",sans-serif; font-size:13px; font-weight:600;
+    color:var(--ink);
+  }
+  .hud .pill .dot{
+    width:8px; height:8px; border-radius:50%; background:#27c66a;
+    box-shadow:0 0 0 4px rgba(39,198,106,.18);
+    animation:pulse 1.6s ease-out infinite;
+  }
+  @keyframes pulse{
+    0%{ box-shadow:0 0 0 0 rgba(39,198,106,.35); }
+    70%{ box-shadow:0 0 0 12px rgba(39,198,106,0); }
+    100%{ box-shadow:0 0 0 0 rgba(39,198,106,0); }
+  }
+  .hud .tl{ top:20px; left:20px; }
+  .hud .tr{ top:20px; right:20px; }
+  .hud .logo{
+    font-family:"Fredoka",sans-serif; font-weight:700; font-size:18px;
+    color:var(--ink); letter-spacing:-.01em;
+  }
+  .hud .logo span{ color:#ff5470; }
+
+  /* center face title — big, friendly */
+  .face-title{
+    position:fixed; left:50%; top:32px; transform:translateX(-50%);
+    z-index:11; pointer-events:none;
+    text-align:center;
+    transition:opacity 300ms ease;
+  }
+  .face-title .eyebrow{
+    font-family:"Inter",sans-serif; font-weight:600; font-size:11px;
+    letter-spacing:.24em; text-transform:uppercase; color:var(--ink-soft); opacity:.75;
+  }
+  .face-title h2{
+    font-family:"Fredoka",sans-serif; font-weight:700; font-size:42px;
+    margin:4px 0 0; color:var(--ink); letter-spacing:-.02em;
+    text-shadow:0 2px 0 rgba(255,255,255,.7);
+  }
+  .face-title.hidden{ opacity:0; }
+
+  /* hint bar */
+  .hint{
+    position:fixed; left:50%; bottom:108px; transform:translateX(-50%);
+    z-index:11; pointer-events:none;
+    display:inline-flex; align-items:center; gap:14px;
+    padding:10px 20px;
+    background:rgba(255,255,255,.78);
+    backdrop-filter:blur(14px);
+    border:1px solid rgba(255,255,255,.6);
+    border-radius:999px;
+    box-shadow:var(--shadow);
+    font-size:13px; font-weight:500; color:var(--ink-soft);
+    transition:opacity 600ms ease, transform 600ms ease;
+  }
+  .hint kbd{
+    font-family:"Inter",sans-serif; font-weight:700; font-size:11px;
+    background:var(--ink); color:#fff; padding:3px 8px; border-radius:6px;
+    box-shadow:0 2px 0 rgba(0,0,0,.2);
+  }
+  .hint.gone{ opacity:0; transform:translate(-50%, 16px); }
+
+  /* face dock — bottom center, friendly chips */
+  .dock{
+    position:fixed; left:50%; bottom:24px; transform:translateX(-50%);
+    z-index:11; pointer-events:auto;
+    display:flex; gap:8px;
+    padding:10px;
+    background:rgba(255,255,255,.78);
+    backdrop-filter:blur(14px);
+    border:1px solid rgba(255,255,255,.6);
+    border-radius:24px;
+    box-shadow:var(--shadow);
+  }
+  .dock button{
+    appearance:none; cursor:pointer;
+    display:flex; flex-direction:column; align-items:center; gap:4px;
+    width:74px; padding:10px 6px 8px;
+    border:0; border-radius:14px;
+    background:transparent; color:var(--ink);
+    font-family:"Inter",sans-serif; font-size:11px; font-weight:600;
+    transition:background 150ms, transform 150ms;
+  }
+  .dock button:hover{ background:rgba(0,0,0,.06); transform:translateY(-1px); }
+  .dock button.active{
+    background:var(--ink); color:#fff;
+  }
+  .dock button.active .swatch{ box-shadow:inset 0 0 0 2px rgba(255,255,255,.4); }
+  .dock button .swatch{
+    width:26px; height:26px; border-radius:8px;
+    box-shadow:inset 0 -3px 0 rgba(0,0,0,.18);
+  }
+
+  /* ─────────── PAGE OVERLAY (after double-click) ─────────── */
+  .page{
+    position:fixed; inset:0; z-index:50;
+    display:none;
+    overflow:auto;
+  }
+  .page.open{ display:block; animation:page-in 420ms cubic-bezier(.22,1,.36,1); }
+  @keyframes page-in{
+    from { opacity:0; transform:scale(1.04); }
+    to   { opacity:1; transform:scale(1); }
+  }
+  .page-back{
+    position:fixed; top:20px; left:20px; z-index:60;
+    appearance:none; cursor:pointer;
+    display:inline-flex; align-items:center; gap:8px;
+    padding:10px 16px;
+    background:rgba(255,255,255,.92);
+    border:1px solid rgba(0,0,0,.08);
+    border-radius:999px;
+    box-shadow:var(--shadow);
+    font-family:"Inter",sans-serif; font-weight:600; font-size:13px; color:var(--ink);
+  }
+  .page-back:hover{ background:#fff; }
+
+  /* page chrome */
+  .page .wrap{
+    min-height:100%;
+    padding:96px 8vw 80px;
+    display:grid; grid-template-columns: 1.1fr .9fr; gap:64px; align-items:center;
+  }
+  .page .hero{ display:flex; flex-direction:column; gap:18px; }
+  .page .kicker{
+    font-family:"Inter",sans-serif; font-weight:700; font-size:12px;
+    letter-spacing:.24em; text-transform:uppercase;
+    color:rgba(0,0,0,.55);
+  }
+  .page h1{
+    font-family:"Fredoka",sans-serif; font-weight:700;
+    font-size:clamp(56px, 9vw, 132px);
+    line-height:.9; letter-spacing:-.03em;
+    margin:0;
+  }
+  .page .lede{
+    font-size:20px; line-height:1.55; max-width:560px;
+    color:rgba(0,0,0,.78); margin:0;
+  }
+  .page .grid{
+    display:grid; grid-template-columns: repeat(2, 1fr); gap:14px;
+  }
+  .page .card{
+    background:rgba(255,255,255,.7);
+    border:1px solid rgba(0,0,0,.06);
+    border-radius:20px;
+    padding:18px 18px 16px;
+    box-shadow:var(--shadow);
+    display:flex; flex-direction:column; gap:8px;
+  }
+  .page .card .lbl{
+    font-size:11px; letter-spacing:.18em; text-transform:uppercase;
+    color:rgba(0,0,0,.5); font-weight:700;
+  }
+  .page .card .val{
+    font-family:"Fredoka",sans-serif; font-weight:600; font-size:22px; color:var(--ink);
+    line-height:1.15;
+  }
+  .page ul.list{
+    list-style:none; padding:0; margin:0;
+    background:rgba(255,255,255,.7);
+    border:1px solid rgba(0,0,0,.06);
+    border-radius:20px;
+    box-shadow:var(--shadow);
+    overflow:hidden;
+  }
+  .page ul.list li{
+    display:flex; justify-content:space-between; align-items:center;
+    padding:18px 22px;
+    border-bottom:1px solid rgba(0,0,0,.06);
+    font-size:17px; font-weight:500;
+  }
+  .page ul.list li:last-child{ border-bottom:0; }
+  .page ul.list li .yr{
+    font-family:"Inter",sans-serif; font-size:12px; letter-spacing:.18em;
+    color:rgba(0,0,0,.55); font-weight:700; text-transform:uppercase;
+  }
+  .page .stats{
+    display:flex; gap:24px; flex-wrap:wrap;
+  }
+  .page .stats div{
+    display:flex; flex-direction:column;
+  }
+  .page .stats .k{
+    font-size:11px; letter-spacing:.18em; text-transform:uppercase;
+    color:rgba(0,0,0,.55); font-weight:700;
+  }
+  .page .stats .v{
+    font-family:"Fredoka",sans-serif; font-weight:600; font-size:24px;
+  }
+
+  /* per-page themes */
+  .page[data-key="home"]    { background:linear-gradient(180deg, #a4d8ff, #d8efff); }
+  .page[data-key="about"]   { background:linear-gradient(180deg, #fde6d3, #fff5e9); }
+  .page[data-key="film"]    { background:linear-gradient(180deg, #2a1a26, #4d2436); color:#fff8ef; }
+  .page[data-key="film"] h1, .page[data-key="film"] .card .val, .page[data-key="film"] .stats .v{ color:#fff8ef; }
+  .page[data-key="film"] .lede{ color:rgba(255,248,239,.8); }
+  .page[data-key="film"] .kicker, .page[data-key="film"] .card .lbl, .page[data-key="film"] .stats .k{ color:rgba(255,248,239,.6); }
+  .page[data-key="film"] .card, .page[data-key="film"] ul.list{ background:rgba(255,255,255,.08); border-color:rgba(255,255,255,.1); }
+  .page[data-key="film"] ul.list li{ border-bottom-color:rgba(255,255,255,.1); }
+
+  .page[data-key="esports"] { background:linear-gradient(180deg, #1a1e2d, #2a3046); color:#eaeefb; }
+  .page[data-key="esports"] h1{ color:#eaeefb; }
+  .page[data-key="esports"] h1 span{ color:#41e1c7; }
+  .page[data-key="esports"] .lede{ color:rgba(234,238,251,.78); }
+  .page[data-key="esports"] .kicker, .page[data-key="esports"] .card .lbl, .page[data-key="esports"] .stats .k{ color:rgba(234,238,251,.6); }
+  .page[data-key="esports"] .card, .page[data-key="esports"] ul.list{ background:rgba(255,255,255,.06); border-color:rgba(255,255,255,.08); }
+  .page[data-key="esports"] ul.list li{ border-bottom-color:rgba(255,255,255,.08); }
+  .page[data-key="esports"] .card .val, .page[data-key="esports"] .stats .v{ color:#fff; }
+
+  .page[data-key="book"]    { background:linear-gradient(180deg, #f4ecd6, #fffaea); }
+  .page[data-key="comedy"]  { background:linear-gradient(180deg, #2a0e16, #461624); color:#fff5d1; }
+  .page[data-key="comedy"] h1{ color:#ffd86b; text-shadow:0 0 30px rgba(255,180,80,.25); }
+  .page[data-key="comedy"] .lede{ color:rgba(255,245,209,.82); }
+  .page[data-key="comedy"] .kicker, .page[data-key="comedy"] .card .lbl, .page[data-key="comedy"] .stats .k{ color:rgba(255,245,209,.6); }
+  .page[data-key="comedy"] .card, .page[data-key="comedy"] ul.list{ background:rgba(255,255,255,.06); border-color:rgba(255,255,255,.1); }
+  .page[data-key="comedy"] ul.list li{ border-bottom-color:rgba(255,255,255,.1); }
+  .page[data-key="comedy"] .card .val, .page[data-key="comedy"] .stats .v{ color:#fff5d1; }
+
+  /* small screens */
+  @media (max-width: 900px) {
+    .face-title h2{ font-size:30px; }
+    .page .wrap{ grid-template-columns: 1fr; gap:28px; padding:80px 24px 96px; }
+    .dock{ overflow-x:auto; max-width:calc(100vw - 24px); }
+    .dock button{ width:64px; font-size:10px; }
+  }
+</style>
+</head>
+<body>
+
+  <!-- soft clouds -->
+  <div class="cloud" style="width:200px;height:60px;top:14%;left:8%;"></div>
+  <div class="cloud" style="width:160px;height:50px;top:24%;right:14%;"></div>
+  <div class="cloud" style="width:120px;height:38px;top:62%;left:18%;"></div>
+
+  <canvas id="stage"></canvas>
+
+  <!-- HUD -->
+  <div class="hud">
+    <div class="pill tl">
+      <span class="logo">BVDS<span>.</span></span>
+    </div>
+    <div class="pill tr">
+      <span class="dot"></span>
+      <span>6 worlds</span>
+    </div>
+  </div>
+
+  <!-- Center face title -->
+  <div class="face-title" id="faceTitle">
+    <div class="eyebrow" id="ftEye">World 01</div>
+    <h2 id="ftTitle">Home</h2>
+  </div>
+
+  <!-- hint -->
+  <div class="hint" id="hint">
+    <span>Drag to spin · <kbd>dbl-click</kbd> a side to enter</span>
+  </div>
+
+  <!-- dock -->
+  <nav class="dock" id="dock"></nav>
+
+  <!-- Page overlays (one per face) -->
+  <section class="page" id="page" data-key="home">
+    <button class="page-back" id="pageBack">← Back to cube</button>
+    <div class="wrap">
+      <div class="hero">
+        <div class="kicker" id="pgKicker">World 01</div>
+        <h1 id="pgTitle">Home</h1>
+        <p class="lede" id="pgLede">Welcome home.</p>
+        <div class="stats">
+          <div><span class="k">Year</span><span class="v" id="pgYear">2026</span></div>
+          <div><span class="k">Format</span><span class="v" id="pgFmt">—</span></div>
+          <div><span class="k">Status</span><span class="v" id="pgStat">—</span></div>
+        </div>
+      </div>
+      <div>
+        <ul class="list" id="pgList"></ul>
+      </div>
+    </div>
+  </section>
+
+<script src="https://unpkg.com/three@0.158.0/build/three.min.js"></script>
+<script>
+(function(){
+
+/* ────────────────────────────────────────────────────────────
+   COLORS  (Crossy-Road-ish vibrant pastels)
+   ──────────────────────────────────────────────────────────── */
+const C = {
+  // grass
+  grass:    0x6cc24a,
+  grassDk:  0x4e9a37,
+  grassLt:  0x82d655,
+  // house
+  wall:     0xf3e2bd,
+  wallSh:   0xddc89a,
+  roof:     0xd1392e,
+  roofDk:   0xa12b22,
+  brick:    0x8a5a3a,
+  brickDk:  0x6b4129,
+  door:     0x5a3a23,
+  doorDk:   0x3e2818,
+  window:   0x9adcff,
+  windowDk: 0x6cb6e3,
+  smoke:    0xf6f3ee,
+  // tree
+  trunk:    0x6d4423,
+  trunkDk:  0x4d2f17,
+  leaf:     0x3a8f33,
+  leafLt:   0x53b440,
+  leafDk:   0x2a6924,
+  // about / portrait
+  frameGold:    0xe8b94a,
+  frameGoldDk:  0xa68326,
+  wallCream:    0xf7eed8,
+  skin:         0xf2c79a,
+  skinDk:       0xc9966a,
+  hair:         0x382213,
+  shirt:        0x29457e,
+  shirtDk:      0x1c3057,
+  // film
+  studioFloor:  0x35303a,
+  studioFloorDk:0x231f27,
+  camBody:      0x222125,
+  camBodyLt:    0x3a373f,
+  camLens:      0x111111,
+  camLensRim:   0xb9b9bd,
+  reel:         0x5a5a62,
+  reelDk:       0x35353a,
+  tripod:       0x2b292d,
+  spot:         0xfff2c0,
+  // esports / desert
+  sand:         0xe8c179,
+  sandDk:       0xc99756,
+  sandLt:       0xf6d796,
+  cactus:       0x488f3b,
+  cactusDk:     0x336827,
+  soldierBody:  0x4b5d33,
+  soldierDk:    0x394725,
+  soldierVest:  0x2f3a22,
+  soldierBoot:  0x2a1f12,
+  gun:          0x2a2724,
+  gunDk:        0x18161a,
+  gunBrn:       0x6a4023,
+  // book
+  shelf:        0x6f4a2b,
+  shelfDk:      0x4e3017,
+  bookRed:      0xb91d24,
+  bookRedDk:    0x82131a,
+  page:         0xf5e9b3,
+  pageDk:       0xd9c97a,
+  ink:          0x2c2218,
+  ribbon:       0xeac152,
+  // comedy
+  stageFloor:   0x1c0f15,
+  stageFloorLt: 0x2b1822,
+  curtain:      0x8a1d2a,
+  curtainDk:    0x60121d,
+  micPole:      0x2a2a2d,
+  micPoleLt:    0x55555a,
+  micHead:      0x4a4a52,
+  micHeadLt:    0x7e7e88,
+  spotlight:    0xfff1b0,
+  stool:        0x4e2e15,
+};
+
+/* ────────────────────────────────────────────────────────────
+   VOXEL HELPERS
+   ──────────────────────────────────────────────────────────── */
+const V = 0.06;                // size of a single voxel unit in world space
+const boxGeom = new THREE.BoxGeometry(1, 1, 1);
+const matCache = {};
+function getMat(hex){
+  if (!matCache[hex]) {
+    matCache[hex] = new THREE.MeshLambertMaterial({ color: hex, flatShading: true });
+  }
+  return matCache[hex];
+}
+// Place a voxel block of integer dimensions (w,h,d) at (x,y,z), where (x,y,z) is the
+// bottom-near-left corner in voxel units. Center is local (0,0,0) at scene origin.
+function block(group, x, y, z, w, h, d, hex){
+  const m = new THREE.Mesh(boxGeom, getMat(hex));
+  m.scale.set(w*V*0.995, h*V*0.995, d*V*0.995);
+  m.position.set((x + w/2) * V, (y + h/2) * V, (z + d/2) * V);
+  group.add(m);
+  return m;
+}
+function rng(seed){
+  let s = seed | 0;
+  return () => { s = (s * 1664525 + 1013904223) | 0; return ((s >>> 0) / 4294967295); };
+}
+
+/* ────────────────────────────────────────────────────────────
+   SHARED SCENE OBJECTS
+   ──────────────────────────────────────────────────────────── */
+function tree(g, cx, cz, h, leafCol, leafLt, trunkCol){
+  leafCol = leafCol ?? C.leaf;
+  leafLt  = leafLt  ?? C.leafLt;
+  trunkCol = trunkCol ?? C.trunk;
+  const trunkH = h;
+  block(g, cx-0.5, 0, cz-0.5, 1, trunkH, 1, trunkCol);
+  block(g, cx-0.5, 0, cz-0.5, 1, 1, 1, C.trunkDk);
+  // leaves — clustered cubes
+  block(g, cx-2, trunkH, cz-2, 4, 3, 4, leafCol);
+  block(g, cx-1, trunkH+3, cz-1, 2, 2, 2, leafCol);
+  block(g, cx-2, trunkH+1, cz-2, 1, 1, 1, leafLt);
+  block(g, cx+1, trunkH, cz+1, 1, 1, 1, leafLt);
+  block(g, cx-1, trunkH+3, cz-1, 1, 1, 1, leafLt);
+}
+function bush(g, cx, cz, col, colLt){
+  col = col ?? C.leaf; colLt = colLt ?? C.leafLt;
+  block(g, cx-1.5, 0, cz-1, 3, 2, 2, col);
+  block(g, cx-1, 0, cz-1.5, 2, 2, 3, col);
+  block(g, cx-1, 2, cz-1, 1, 1, 1, colLt);
+}
+
+/* ────────────────────────────────────────────────────────────
+   SCENE 1 — HOMEPAGE: cozy house, chimney smoke, trees, bushes
+   Local frame: +Y = out from cube face, X right, Z forward
+   ──────────────────────────────────────────────────────────── */
+function buildHomeScene(){
+  const g = new THREE.Group();
+
+  // ground tufts (face is already grass-colored, but scatter darker/lighter tufts)
+  const r = rng(11);
+  for (let i = 0; i < 60; i++){
+    const x = Math.floor((r()-.5) * 22);
+    const z = Math.floor((r()-.5) * 22);
+    if (Math.abs(x) < 3 && Math.abs(z) < 4) continue; // not on the house pad
+    const col = r() > .5 ? C.grassDk : C.grassLt;
+    block(g, x, 0, z, 1, 1, 1, col);
+  }
+  // a small dirt path to door
+  for (let i = 0; i < 4; i++) block(g, -0.5, 0, 1.5+i, 1, 1, 1, 0xa7855a);
+  block(g, -1, 0, 5.2, 2, 1, 1, 0xa7855a);
+
+  // HOUSE — 6w x 5h x 5d, centered at x=0, z=-2 (away from camera face)
+  // walls
+  block(g, -3, 1, -4, 6, 4, 5, C.wall);
+  // wall shading at the back
+  block(g, -3, 1, -4, 6, 1, 5, C.wallSh);
+  // door
+  block(g, -0.5, 1, 1, 1, 2, 0.5, C.door);
+  block(g, -0.5, 2, 1, 1, 1, 0.5, C.doorDk);
+  // doorknob
+  block(g, 0.25, 2, 1.5, 0.25, 0.25, 0.25, 0xe8b94a);
+  // windows (front L+R)
+  block(g, -2.2, 2.4, 1, 1.2, 1.4, 0.4, C.window);
+  block(g, 1, 2.4, 1, 1.2, 1.4, 0.4, C.window);
+  block(g, -2.2, 2.4, 1, 1.2, 0.3, 0.4, C.windowDk);
+  block(g, 1, 2.4, 1, 1.2, 0.3, 0.4, C.windowDk);
+  // side window
+  block(g, 3, 2.4, -2.2, 0.4, 1.4, 1.2, C.window);
+  block(g, 3, 2.4, -2.2, 0.4, 0.3, 1.2, C.windowDk);
+
+  // ROOF — stair-step gabled (overhang)
+  // base eaves
+  block(g, -3.5, 5, -4.5, 7, 0.4, 6, C.roofDk);
+  // sloped sides (running along X) — narrowing on Z
+  for (let i = 0; i < 4; i++){
+    block(g, -3.5, 5 + i*0.7, -4.5 + i*0.6, 7, 0.7, 6 - i*1.2, C.roof);
+    if (i % 2 === 0) block(g, -3.5, 5 + i*0.7, -4.5 + i*0.6, 7, 0.7, 0.2, C.roofDk);
+  }
+  // ridge
+  block(g, -3.5, 5 + 4*0.7, -1.8, 7, 0.4, 0.6, C.roofDk);
+
+  // CHIMNEY (back-right of roof)
+  block(g, 1.6, 6, -2.6, 1.2, 2.4, 1.2, C.brick);
+  block(g, 1.6, 8.0, -2.6, 1.2, 0.4, 1.2, C.brickDk);
+  // brick stripe detail
+  block(g, 1.6, 6.8, -2.6, 1.2, 0.15, 1.2, C.brickDk);
+  block(g, 1.6, 7.4, -2.6, 1.2, 0.15, 1.2, C.brickDk);
+
+  // SMOKE (animated)
+  const smokeAnchor = new THREE.Vector3(2.2*V, 8.6*V, -2.0*V);
+  const smokes = [];
+  for (let i = 0; i < 5; i++){
+    const s = new THREE.Mesh(boxGeom, getMat(C.smoke));
+    const sz = (0.9 + i*0.18) * V;
+    s.scale.set(sz, sz, sz);
+    s.position.copy(smokeAnchor);
+    g.add(s);
+    smokes.push({ mesh: s, t: i * 0.6, baseScale: 0.9 + i*0.18 });
+  }
+  g.userData.smokes = smokes;
+  g.userData.smokeAnchor = smokeAnchor;
+
+  // TREES — two on the left, one on the right
+  tree(g, -8, -6, 4);
+  tree(g, -7, 5, 3);
+  tree(g, 7, -5, 4);
+
+  // BUSHES — scattered
+  bush(g, -5, 3);
+  bush(g, 5, 4);
+  bush(g, 7, -1);
+  bush(g, -8, 8, C.leafDk, C.leaf);
+
+  // little flowers
+  for (const [fx, fz, col] of [[-3, 4, 0xff5470], [3, 5, 0xffd86b], [-6, -2, 0xff9bd2], [6, -2, 0xffd86b]]) {
+    block(g, fx, 1, fz, 0.4, 0.4, 0.4, col);
+    block(g, fx+0.2, 0, fz+0.2, 0.2, 1, 0.2, C.leafDk);
+  }
+
+  // recenter scene to face origin
+  centerSceneXZ(g, 0, -1);
+  return g;
+}
+
+/* ────────────────────────────────────────────────────────────
+   SCENE 2 — ABOUT ME: framed portrait of a man
+   ──────────────────────────────────────────────────────────── */
+function buildAboutScene(){
+  const g = new THREE.Group();
+
+  // wall paneling base
+  block(g, -10, 0, -10, 20, 0.4, 20, C.wallCream);
+  // a couple of darker floor accents
+  block(g, -10, 0.05, -10, 20, 0.4, 1.2, 0xe6dac0);
+
+  // a small wooden table/shelf below the frame
+  block(g, -3, 0.4, -2, 6, 0.8, 4, C.shelf);
+  block(g, -3, 0.4, -2, 6, 0.2, 4, C.shelfDk);
+  // a tiny vase
+  block(g, 2, 1.2, -0.5, 0.8, 1.4, 0.8, 0x4e84d8);
+  block(g, 2, 2.6, -0.5, 0.8, 0.3, 0.8, 0xff9bd2);
+
+  // PICTURE FRAME (tall portrait)
+  // outer gold frame
+  const fw = 7, fh = 9, fz = -3.6, fy = 1.6, fx = -3.5;
+  // top
+  block(g, fx, fy + fh - 1, fz, fw, 1, 0.6, C.frameGold);
+  block(g, fx, fy + fh - 1, fz, fw, 0.3, 0.6, C.frameGoldDk);
+  // bottom
+  block(g, fx, fy, fz, fw, 1, 0.6, C.frameGold);
+  block(g, fx, fy, fz, fw, 0.3, 0.6, C.frameGoldDk);
+  // left
+  block(g, fx, fy, fz, 1, fh, 0.6, C.frameGold);
+  block(g, fx, fy, fz, 0.3, fh, 0.6, C.frameGoldDk);
+  // right
+  block(g, fx + fw - 1, fy, fz, 1, fh, 0.6, C.frameGold);
+  block(g, fx + fw - 0.3, fy, fz, 0.3, fh, 0.6, C.frameGoldDk);
+  // canvas back
+  block(g, fx + 1, fy + 1, fz + 0.05, fw - 2, fh - 2, 0.3, C.paper2 ?? 0x2c3554);
+
+  // PORTRAIT — voxel man inside the frame
+  const px = fx + 1.5, py = fy + 1, pz = fz + 0.2;
+  // background fill (soft warm)
+  block(g, fx + 1, fy + 1, fz + 0.05, fw - 2, fh - 2, 0.3, 0x3d4f78);
+  // shoulders / shirt
+  block(g, px + 0.6, py + 0.4, pz, fw - 3.2, 2.4, 0.3, C.shirt);
+  block(g, px + 0.6, py + 0.4, pz, fw - 3.2, 0.6, 0.3, C.shirtDk);
+  // shirt collar V
+  block(g, px + 1.7, py + 2.4, pz, 0.6, 0.6, 0.3, C.skin);
+  // neck
+  block(g, px + 1.4, py + 2.3, pz, 1.2, 0.8, 0.3, C.skin);
+  // head
+  block(g, px + 1.1, py + 3, pz, 1.8, 2.2, 0.3, C.skin);
+  // hair
+  block(g, px + 1.0, py + 4.6, pz, 2.0, 0.7, 0.3, C.hair);
+  block(g, px + 1.0, py + 4.3, pz, 0.5, 0.4, 0.3, C.hair);
+  block(g, px + 2.5, py + 4.3, pz, 0.5, 0.4, 0.3, C.hair);
+  // eyes
+  block(g, px + 1.5, py + 4.0, pz + 0.3, 0.25, 0.25, 0.05, 0x222);
+  block(g, px + 2.25, py + 4.0, pz + 0.3, 0.25, 0.25, 0.05, 0x222);
+  // mouth (smile)
+  block(g, px + 1.8, py + 3.3, pz + 0.3, 0.4, 0.15, 0.05, 0x6b3a26);
+  // cheek blush
+  block(g, px + 1.25, py + 3.55, pz + 0.3, 0.3, 0.2, 0.05, 0xe89d8a);
+  block(g, px + 2.45, py + 3.55, pz + 0.3, 0.3, 0.2, 0.05, 0xe89d8a);
+
+  // name plaque under the frame
+  block(g, fx + 1.5, fy - 0.6, fz + 0.05, fw - 3, 0.4, 0.3, 0x1a1f2e);
+  block(g, fx + 1.6, fy - 0.55, fz + 0.4, 0.4, 0.3, 0.05, C.frameGold);
+  block(g, fx + 4.6, fy - 0.55, fz + 0.4, 0.4, 0.3, 0.05, C.frameGold);
+
+  // a book on the shelf
+  block(g, -2.5, 1.2, -0.5, 0.5, 1.2, 1.4, C.bookRed);
+  block(g, -1.9, 1.2, -0.5, 0.5, 1.2, 1.4, 0x2c4a7c);
+  block(g, -1.3, 1.2, -0.5, 0.5, 1.2, 1.4, 0x3b7a4b);
+
+  centerSceneXZ(g, 0, 0);
+  return g;
+}
+
+/* ────────────────────────────────────────────────────────────
+   SCENE 3 — FILM: classic camera in a studio
+   ──────────────────────────────────────────────────────────── */
+function buildFilmScene(){
+  const g = new THREE.Group();
+
+  // studio floor (dark checker)
+  for (let x = -10; x < 10; x += 2){
+    for (let z = -10; z < 10; z += 2){
+      const c = ((x + z) % 4 === 0) ? C.studioFloor : C.studioFloorDk;
+      block(g, x, 0, z, 2, 0.3, 2, c);
+    }
+  }
+
+  // CAMERA on TRIPOD
+  // tripod legs (3)
+  block(g, -2.5, 0.3, 0, 0.4, 5, 0.4, C.tripod);  // back-left
+  block(g, 2.1, 0.3, 0, 0.4, 5, 0.4, C.tripod);   // back-right
+  block(g, -0.2, 0.3, 2.4, 0.4, 5, 0.4, C.tripod); // front
+  // tripod head
+  block(g, -0.8, 5.0, 0.6, 1.6, 0.8, 1.4, C.camBodyLt);
+
+  // camera body (rectangular)
+  block(g, -1.6, 5.8, -0.4, 3.2, 2.6, 3.0, C.camBody);
+  block(g, -1.6, 5.8, -0.4, 3.2, 0.5, 3.0, C.camBodyLt);
+  block(g, -1.6, 5.8 + 2.1, -0.4, 3.2, 0.5, 3.0, C.camBodyLt);
+  // body details — buttons
+  block(g, 0.6, 6.6, -0.4, 0.3, 0.3, 0.05, 0xff5470);
+  block(g, 0.6, 6.0, -0.4, 0.3, 0.3, 0.05, 0xffd86b);
+
+  // film reels on top (two flat discs as voxel squares)
+  for (const [rx, rz] of [[-1.2, 0.6], [0.6, 0.6]]){
+    // disc base
+    block(g, rx, 8.45, rz, 1.4, 0.2, 1.4, C.reel);
+    block(g, rx, 8.65, rz, 1.4, 0.6, 1.4, C.reelDk);
+    block(g, rx + 0.5, 8.65, rz + 0.5, 0.4, 0.6, 0.4, 0xddd);
+    // film spool ridges
+    block(g, rx, 8.55, rz - 0.05, 1.4, 0.05, 0.05, 0x000);
+    block(g, rx, 8.55, rz + 1.4, 1.4, 0.05, 0.05, 0x000);
+  }
+
+  // LENS (cylinder approximated with stacked squares)
+  // lens hood (forward, +Z)
+  block(g, -0.8, 5.7, 2.6, 1.6, 1.6, 0.3, C.camLensRim);
+  // lens barrel
+  block(g, -0.7, 5.8, 1.7, 1.4, 1.4, 1.2, C.camLens);
+  block(g, -0.5, 6.0, 2.85, 1.0, 1.0, 0.1, 0x3a8ad9);   // lens glass tint
+  block(g, -0.3, 6.2, 2.93, 0.6, 0.6, 0.04, 0xffffff);  // hot reflection
+
+  // viewfinder on side
+  block(g, 1.6, 6.6, 0.4, 0.6, 0.6, 1.0, C.camBodyLt);
+
+  // SPOTLIGHTS on either side
+  function spot(x, z){
+    // boom arm
+    block(g, x, 0.3, z, 0.4, 6, 0.4, C.tripod);
+    // hood
+    block(g, x - 0.8, 6.2, z - 0.8, 2, 1.6, 2, 0x3a373f);
+    // bulb glow
+    block(g, x - 0.4, 6.4, z + 1.0, 1.2, 1.2, 0.3, C.spot);
+  }
+  spot(-8, -4); spot(7, -3);
+
+  // a clapperboard on the floor
+  block(g, -7, 0.3, 6, 3, 0.4, 2, 0x111);
+  block(g, -7, 0.7, 6, 3, 0.6, 2, 0x1a1a1a);
+  block(g, -7, 1.3, 6, 3, 0.5, 2, 0xeeeeee);
+  // diagonal stripes
+  for (let i = 0; i < 4; i++) block(g, -6.8 + i*0.7, 1.3, 6, 0.3, 0.5, 2, 0x111);
+
+  // cables on floor
+  for (let i = 0; i < 7; i++) block(g, 4 + i*0.5, 0.3, -7 + Math.sin(i)*0.6, 0.5, 0.2, 0.5, 0x1a1a1a);
+
+  centerSceneXZ(g, 0, 0);
+  return g;
+}
+
+/* ────────────────────────────────────────────────────────────
+   SCENE 4 — ESPORTS: digital soldier on desert
+   ──────────────────────────────────────────────────────────── */
+function buildEsportsScene(){
+  const g = new THREE.Group();
+
+  // sand dunes — uneven terrain
+  const r = rng(7);
+  for (let x = -11; x <= 11; x++){
+    for (let z = -11; z <= 11; z++){
+      const h = Math.max(0, Math.floor(
+        Math.sin(x*0.3)*0.6 + Math.cos(z*0.4)*0.6 + (r()-.5)*0.7
+      ));
+      const col = h > 0 ? C.sandLt : (((x + z) & 1) ? C.sand : C.sandDk);
+      block(g, x, 0, z, 1, 1 + h*0.5, 1, col);
+    }
+  }
+  // a dry rock or two
+  block(g, -6, 0.6, 5, 2, 1, 2, 0x8a7a5e);
+  block(g, -7, 1.4, 5, 1, 0.6, 1, 0x6b5b44);
+  block(g, 6, 0.6, -5, 2, 1, 2, 0x8a7a5e);
+
+  // cactus
+  block(g, 8, 0.6, 4, 0.8, 3, 0.8, C.cactus);
+  block(g, 8, 1.4, 3.3, 0.8, 0.8, 0.7, C.cactus);
+  block(g, 7.4, 1.4, 4, 0.6, 0.8, 0.8, C.cactus);
+  block(g, 8, 0.6, 4, 0.8, 0.5, 0.8, C.cactusDk);
+
+  // SOLDIER (built as a group so we can animate it)
+  const soldier = new THREE.Group();
+  // body — 2x3x1
+  block(soldier, -1, 3.5, -0.5, 2, 3, 1, C.soldierBody);
+  // vest
+  block(soldier, -1, 4.0, -0.55, 2, 1.6, 0.15, C.soldierVest);
+  // belt
+  block(soldier, -1, 3.5, -0.55, 2, 0.4, 1.1, C.soldierVest);
+  // head
+  block(soldier, -0.8, 6.5, -0.4, 1.6, 1.4, 0.8, C.skin);
+  // helmet
+  const helmet = new THREE.Group();
+  block(helmet, -0.9, 7.6, -0.5, 1.8, 0.7, 1.0, C.soldierDk);
+  block(helmet, -0.9, 7.2, -0.5, 1.8, 0.5, 1.0, C.soldierDk);
+  block(helmet, -1.0, 7.4, 0.3, 2.0, 0.4, 0.1, C.soldierBody);
+  soldier.add(helmet);
+  // eyes (visor strip)
+  block(soldier, -0.8, 7.0, 0.42, 1.6, 0.25, 0.05, 0x111);
+  block(soldier, -0.4, 7.05, 0.46, 0.2, 0.15, 0.05, 0x41e1c7);
+  block(soldier, 0.2, 7.05, 0.46, 0.2, 0.15, 0.05, 0x41e1c7);
+
+  // arms holding rifle (positioned forward)
+  // left arm
+  const armL = new THREE.Group();
+  block(armL, -1.7, 4.6, 0.2, 0.7, 1.6, 0.8, C.soldierBody);
+  block(armL, -1.7, 4.2, 0.4, 0.7, 0.4, 0.8, C.skin);
+  soldier.add(armL);
+  // right arm
+  const armR = new THREE.Group();
+  block(armR, 1.0, 4.6, 0.2, 0.7, 1.6, 0.8, C.soldierBody);
+  block(armR, 1.0, 4.2, 0.4, 0.7, 0.4, 0.8, C.skin);
+  soldier.add(armR);
+  // rifle (held horizontally in front)
+  const rifle = new THREE.Group();
+  // stock
+  block(rifle, -1.0, 4.7, 1.0, 1.2, 0.6, 0.5, C.gunBrn);
+  // body
+  block(rifle, -0.2, 4.7, 1.0, 1.6, 0.6, 0.5, C.gun);
+  // barrel
+  block(rifle, 1.4, 4.85, 1.05, 1.8, 0.3, 0.4, C.gunDk);
+  // sight
+  block(rifle, 0.4, 5.3, 1.1, 0.3, 0.3, 0.3, C.gunDk);
+  // magazine
+  block(rifle, 0.2, 4.0, 1.05, 0.5, 0.7, 0.4, C.gunDk);
+  soldier.add(rifle);
+
+  // legs (animated)
+  const legL = new THREE.Group();
+  block(legL, -1, 0, -0.5, 0.9, 3.5, 1, C.soldierBody);
+  block(legL, -1, 0, -0.5, 0.9, 0.6, 1, C.soldierBoot);
+  legL.userData.pivot = new THREE.Vector3(-0.55*V, 3.5*V, 0);
+  soldier.add(legL);
+  const legR = new THREE.Group();
+  block(legR, 0.1, 0, -0.5, 0.9, 3.5, 1, C.soldierBody);
+  block(legR, 0.1, 0, -0.5, 0.9, 0.6, 1, C.soldierBoot);
+  legR.userData.pivot = new THREE.Vector3(0.55*V, 3.5*V, 0);
+  soldier.add(legR);
+
+  // expose for animation
+  g.userData.soldier = soldier;
+  g.userData.soldierHead = null; // we'll find them via flat group lookups below
+  // instead, store explicit refs:
+  g.userData.legL = legL;
+  g.userData.legR = legR;
+  g.userData.armL = armL;
+  g.userData.armR = armR;
+  g.userData.helmet = helmet;
+  // simulate "head" rotation by rotating the whole head + helmet — group together
+  // We'll just rotate the helmet group as a stand-in (and add a head pivot via group)
+  // For better effect: bundle head pieces:
+  const headBundle = new THREE.Group();
+  headBundle.position.set(0, 6.9*V, 0);
+  // move the head & helmet boxes we already created? Simpler: add new pieces and skip what we built.
+  // To keep code simple we'll skip rotating the head and just rotate the soldier slightly side-to-side.
+  soldier.position.set(0, 0, 0);
+  g.add(soldier);
+
+  // bullet casings on ground
+  for (let i = 0; i < 5; i++){
+    block(g, 1.5 + i*0.3, 1.0, 1.2 + i*0.15, 0.2, 0.2, 0.2, 0xc8a046);
+  }
+
+  centerSceneXZ(g, 0, 0);
+  return g;
+}
+
+/* ────────────────────────────────────────────────────────────
+   SCENE 5 — BOOK: open hardback with red cover, yellow pages
+   ──────────────────────────────────────────────────────────── */
+function buildBookScene(){
+  const g = new THREE.Group();
+
+  // small wood desk surface
+  block(g, -11, 0, -11, 22, 0.6, 22, 0x6e4527);
+  block(g, -11, 0, -11, 22, 0.2, 22, C.shelfDk);
+  // wood plank lines
+  for (let i = -10; i < 11; i += 3){
+    block(g, -11, 0.6, i, 22, 0.05, 0.2, 0x4d3017);
+  }
+
+  // OPEN BOOK — V-shape, two pages
+  // book base (red cover)
+  // left half tilted up to left
+  function pageStack(xStart, zStart, w, d, pages, baseHex, edgeHex){
+    // cover bottom
+    block(g, xStart - 0.3, 0.6, zStart - 0.3, w + 0.6, 0.6, d + 0.6, baseHex);
+    block(g, xStart - 0.3, 0.6, zStart - 0.3, w + 0.6, 0.2, d + 0.6, C.bookRedDk);
+    // pages stack
+    block(g, xStart, 1.2, zStart, w, pages, d, C.page);
+    // edge yellowing
+    block(g, xStart, 1.2, zStart, w, pages, 0.15, C.pageDk);
+    block(g, xStart, 1.2, zStart + d - 0.15, w, pages, 0.15, C.pageDk);
+    block(g, xStart + w - 0.15, 1.2, zStart, 0.15, pages, d, C.pageDk);
+    block(g, xStart, 1.2, zStart, 0.15, pages, d, C.pageDk);
+    // top page surface (slightly different shade)
+    block(g, xStart, 1.2 + pages, zStart, w, 0.05, d, C.pageDk);
+    // text lines
+    for (let i = 0; i < 6; i++){
+      const ly = 1.2 + pages + 0.1;
+      const lz = zStart + 0.6 + i * (d - 1.2) / 6;
+      const lw = w * (0.62 + (i % 3) * 0.1);
+      block(g, xStart + 0.6, ly, lz, lw - 0.4, 0.05, 0.18, C.ink);
+    }
+  }
+  // left page
+  pageStack(-7.2, -3.8, 6.6, 7.6, 1.4, C.bookRed, C.bookRedDk);
+  // right page
+  pageStack( 0.6, -3.8, 6.6, 7.6, 1.4, C.bookRed, C.bookRedDk);
+
+  // central spine — a small darker block between
+  block(g, -0.6, 0.6, -4.2, 1.2, 1.0, 8.4, C.bookRedDk);
+  block(g, -0.6, 1.6, -4.2, 1.2, 0.2, 8.4, 0xfde08c);
+
+  // ribbon bookmark hanging out the bottom
+  block(g, 1.2, 1.65, 4.0, 0.6, 0.2, 2.8, C.ribbon);
+  block(g, 1.2, 1.65, 6.4, 0.6, 0.2, 0.6, 0xc4a13a);
+
+  // a coffee mug nearby
+  block(g, 8, 0.8, -5, 1.8, 2.4, 1.8, 0xfff8ef);
+  block(g, 8, 0.8, -5, 1.8, 0.4, 1.8, 0xddccb0);
+  block(g, 9.8, 1.3, -4.3, 0.4, 1.4, 0.4, 0xfff8ef);
+  block(g, 8.3, 2.6, -4.7, 1.2, 0.3, 1.2, 0x6e4527);
+
+  // a small pencil
+  block(g, -10, 0.6, 4, 4, 0.3, 0.4, 0xffd86b);
+  block(g, -6, 0.6, 4, 0.6, 0.3, 0.4, 0xe89d8a);
+  block(g, -10.4, 0.6, 4, 0.4, 0.3, 0.4, 0x222);
+
+  centerSceneXZ(g, 0, 0);
+  return g;
+}
+
+/* ────────────────────────────────────────────────────────────
+   SCENE 6 — COMEDY: mic on stand under spotlight on dark stage
+   ──────────────────────────────────────────────────────────── */
+function buildComedyScene(){
+  const g = new THREE.Group();
+
+  // stage floor (dark wood)
+  for (let x = -10; x < 10; x += 2){
+    for (let z = -10; z < 10; z += 2){
+      const c = ((x + z) & 2) ? C.stageFloor : C.stageFloorLt;
+      block(g, x, 0, z, 2, 0.3, 2, c);
+    }
+  }
+  // stage edge highlight (front)
+  block(g, -10, 0.3, 9, 20, 0.2, 1, 0x3a1f2c);
+
+  // RED CURTAIN backdrop (back)
+  for (let i = 0; i < 12; i++){
+    const h = 10 + Math.sin(i*0.7) * 0.6;
+    const x = -10 + i * 1.65;
+    block(g, x, 0.3, -10, 1.4, h, 1.0, i % 2 ? C.curtain : C.curtainDk);
+    // valance top
+    block(g, x, 9.8, -10, 1.4, 0.6, 1.0, 0x4a0d18);
+  }
+  // top trim
+  block(g, -10, 10.3, -10, 20, 0.6, 1.2, 0xeac152);
+
+  // MIC STAND (base + pole)
+  // base
+  block(g, -0.8, 0.3, -0.8, 1.6, 0.4, 1.6, C.micPole);
+  block(g, -0.8, 0.3, -0.8, 1.6, 0.15, 1.6, C.micPoleLt);
+  // pole
+  block(g, -0.2, 0.7, -0.2, 0.4, 6.5, 0.4, C.micPoleLt);
+  // mic head (round-ish)
+  block(g, -0.8, 7.0, -0.8, 1.6, 1.2, 1.6, C.micHead);
+  block(g, -0.7, 7.2, -0.7, 1.4, 0.4, 1.4, C.micHeadLt);
+  // grille pattern (front)
+  for (let i = 0; i < 4; i++)
+    for (let j = 0; j < 3; j++)
+      block(g, -0.55 + i*0.25, 7.2 + j*0.25, 0.78, 0.15, 0.15, 0.05, 0x111);
+  // mic mount
+  block(g, -0.3, 6.7, -0.3, 0.6, 0.4, 0.6, C.micPole);
+
+  // BAR STOOL behind mic
+  block(g, 3, 0.3, -2, 2, 3.4, 2, C.stool);
+  block(g, 3, 3.5, -2, 2, 0.4, 2, 0x2a1407);
+  // 4 legs darker
+  block(g, 3, 0.3, -2, 0.3, 3.4, 0.3, 0x1a0d04);
+  block(g, 4.7, 0.3, -2, 0.3, 3.4, 0.3, 0x1a0d04);
+  block(g, 3, 0.3, -0.3, 0.3, 3.4, 0.3, 0x1a0d04);
+  block(g, 4.7, 0.3, -0.3, 0.3, 3.4, 0.3, 0x1a0d04);
+
+  // SPOTLIGHT CONE — a translucent voxel column above the mic
+  const cone = new THREE.Group();
+  for (let i = 0; i < 9; i++){
+    const t = i / 9;
+    const w = 0.4 + t*2.6;
+    const m = new THREE.Mesh(boxGeom, new THREE.MeshBasicMaterial({
+      color: C.spotlight, transparent: true, opacity: 0.10 - i*0.008, depthWrite: false
+    }));
+    m.scale.set(w*V, 1.2*V, w*V);
+    m.position.set(0, (7.6 + i*1.2)*V, 0);
+    cone.add(m);
+  }
+  g.add(cone);
+  g.userData.cone = cone;
+
+  // floor spotlight pool around mic
+  const pool = new THREE.Mesh(boxGeom, new THREE.MeshBasicMaterial({
+    color: C.spotlight, transparent: true, opacity: 0.22, depthWrite: false
+  }));
+  pool.scale.set(5.6*V, 0.05*V, 5.6*V);
+  pool.position.set(0, 0.4*V, 0);
+  g.add(pool);
+
+  // a small brick wall on the side (comedy club vibe)
+  for (let i = 0; i < 4; i++){
+    for (let j = 0; j < 4; j++){
+      const off = (i % 2) ? 0 : 1;
+      block(g, 7 + j*1.1, 0.3 + i*0.9, -9 + off*0.2, 1.0, 0.85, 0.4, i*j%3?0x6b2a26:0x8b3a30);
+    }
+  }
+
+  centerSceneXZ(g, 0, 0);
+  return g;
+}
+
+/* ────────────────────────────────────────────────────────────
+   util: recenter a built scene about its X/Z bounding box
+   ──────────────────────────────────────────────────────────── */
+function centerSceneXZ(g, offsetX = 0, offsetZ = 0){
+  const box = new THREE.Box3().setFromObject(g);
+  const cx = (box.min.x + box.max.x) / 2;
+  const cz = (box.min.z + box.max.z) / 2;
+  g.children.forEach(c => {
+    c.position.x -= cx;
+    c.position.z -= cz;
+    c.position.x += offsetX * V;
+    c.position.z += offsetZ * V;
+  });
+  // also fix any anchor vectors used for animation
+  if (g.userData.smokeAnchor) {
+    g.userData.smokeAnchor.x -= cx;
+    g.userData.smokeAnchor.z -= cz;
+    // smokes positions also moved (their meshes are children, already shifted)
+  }
+}
+
+/* ────────────────────────────────────────────────────────────
+   FACE CONFIG
+   ──────────────────────────────────────────────────────────── */
+const FACES = [
+  { key:'home',    no:'01', title:'Home',     baseColor: 0x6cc24a, // grass
+    build: buildHomeScene,
+    pos:[ 0, 1, 0],  // top (so the scene grows upward, looks beautiful)
+    lede:'A cozy corner of the internet — where I keep what I make and what I love.',
+    fmt:'Index', stat:'Open',
+    items:[['Welcome',''], ['Latest work','2025'], ['Now playing',''], ['Newsletter','↗']],
+  },
+  { key:'about',   no:'02', title:'About me', baseColor: 0xf7eed8,
+    build: buildAboutScene,
+    pos:[ 0, 0, 1],
+    lede:'A short bio: who I am, where I’m from, and the things I keep returning to.',
+    fmt:'Long-read', stat:'Updated · May',
+    items:[['Background','NL · AKV'], ['CV (pdf)','↗'], ['Press & talks','×08'], ['Selected clients','2018→26']],
+  },
+  { key:'film',    no:'03', title:'Film',     baseColor: 0x35303a,
+    build: buildFilmScene,
+    pos:[ 1, 0, 0],
+    lede:'Short films, music videos and documentary fragments — usually shot on film, scanned at 4K.',
+    fmt:'16mm · 4K', stat:'×03 in progress',
+    items:[['"The Long Walk Home"','2025'], ['"Halverwege"','2024'], ['"Notes on a Quiet Town"','2023'], ['"Bart & Other Strangers"','2022']],
+  },
+  { key:'esports', no:'04', title:'Esports',  baseColor: 0xe8c179,
+    build: buildEsportsScene,
+    pos:[ 0, 0,-1],
+    lede:'Competitive play, scrim notes, and the highlight reels I’m proud of.',
+    fmt:'FPS · Tactical', stat:'In season',
+    items:[['Team — Vondelpark Riflers','EU'], ['Rank — Diamond III','2026 S2'], ['Highlights','×24'], ['Stream','↗ twitch']],
+  },
+  { key:'book',    no:'05', title:'Book',     baseColor: 0xd9c98a,
+    build: buildBookScene,
+    pos:[-1, 0, 0],
+    lede:'A reading log — what I’m in the middle of, what I just finished, and my favourites.',
+    fmt:'Reading log', stat:'×07 this year',
+    items:[['Currently reading','—'], ['Just finished','×02'], ['Top of 2025','×05'], ['Wishlist','×11']],
+  },
+  { key:'comedy',  no:'06', title:'Comedy',   baseColor: 0x1c0f15,
+    build: buildComedyScene,
+    pos:[ 0,-1, 0],
+    lede:'Sets, open mics and bits I’m working on. Last set: 9 minutes, Toomler Amsterdam.',
+    fmt:'Stand-up', stat:'Next: Jun 14',
+    items:[['Tour dates','×04'], ['Set recordings','×06'], ['Bits notebook','wip'], ['Bookings','↗ mail']],
+  },
+];
+
+/* ────────────────────────────────────────────────────────────
+   THREE setup
+   ──────────────────────────────────────────────────────────── */
+const canvas = document.getElementById('stage');
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+renderer.setClearColor(0x000000, 0);
+
+const scene = new THREE.Scene();
+scene.fog = null;
+
+const CAM_DEFAULT_POS  = new THREE.Vector3(2.6, 2.0, 4.8);
+const CAM_DEFAULT_LOOK = new THREE.Vector3(0, 0, 0);
+const camera = new THREE.PerspectiveCamera(34, 1, 0.1, 100);
+camera.position.copy(CAM_DEFAULT_POS);
+camera.lookAt(CAM_DEFAULT_LOOK);
+
+/* lights — bright, friendly, no harsh shadows */
+scene.add(new THREE.AmbientLight(0xffffff, 0.7));
+const dl = new THREE.DirectionalLight(0xffffff, 0.85);
+dl.position.set(4, 8, 6);
+scene.add(dl);
+const fill = new THREE.DirectionalLight(0xfde08c, 0.30);
+fill.position.set(-5, 3, -4);
+scene.add(fill);
+const rim = new THREE.DirectionalLight(0x9ad9ff, 0.30);
+rim.position.set(-2, -3, 5);
+scene.add(rim);
+
+function resize(){
+  const w = window.innerWidth, h = window.innerHeight;
+  camera.aspect = w / h;
+  camera.updateProjectionMatrix();
+  renderer.setSize(w, h, false);
+}
+window.addEventListener('resize', resize);
+resize();
+
+/* ────────────────────────────────────────────────────────────
+   THE CUBE
+   ──────────────────────────────────────────────────────────── */
+const cube = new THREE.Group();
+scene.add(cube);
+
+const FACE_SIZE = 2.6;
+const HALF = FACE_SIZE / 2;
+
+// solid cube body — each face has its own base color
+function mat(hex){ return new THREE.MeshLambertMaterial({ color: hex, flatShading: true }); }
+function faceFor(dir){
+  const m = {
+    px: 'film',   // +x
+    nx: 'book',   // -x
+    py: 'home',   // +y
+    ny: 'comedy', // -y
+    pz: 'about',  // +z
+    nz: 'esports',// -z
+  };
+  return FACES.find(f => f.key === m[dir]);
+}
+const cubeMats = [
+  mat(faceFor('px').baseColor),
+  mat(faceFor('nx').baseColor),
+  mat(faceFor('py').baseColor),
+  mat(faceFor('ny').baseColor),
+  mat(faceFor('pz').baseColor),
+  mat(faceFor('nz').baseColor),
+];
+const cubeGeom = new THREE.BoxGeometry(FACE_SIZE, FACE_SIZE, FACE_SIZE);
+const cubeMesh = new THREE.Mesh(cubeGeom, cubeMats);
+cube.add(cubeMesh);
+
+// outline
+const edges = new THREE.LineSegments(
+  new THREE.EdgesGeometry(new THREE.BoxGeometry(FACE_SIZE*1.001, FACE_SIZE*1.001, FACE_SIZE*1.001)),
+  new THREE.LineBasicMaterial({ color: 0x1a1f2e, linewidth: 2 })
+);
+cube.add(edges);
+
+// soft drop shadow (a flat dark disk under the cube)
+const shadow = new THREE.Mesh(
+  new THREE.CircleGeometry(2.2, 32),
+  new THREE.MeshBasicMaterial({ color: 0x1a1f2e, transparent: true, opacity: 0.18, depthWrite: false })
+);
+shadow.rotation.x = -Math.PI / 2;
+shadow.position.y = -1.9;
+scene.add(shadow);
+
+/* attach each face scene */
+const faceMeta = new Map(); // key → { group, normalLocal }
+FACES.forEach(f => {
+  const sceneGroup = f.build();
+  const normalLocal = new THREE.Vector3(...f.pos).normalize();
+  const up = new THREE.Vector3(0, 1, 0);
+  // Align scene's local +Y with face normal
+  const q = new THREE.Quaternion().setFromUnitVectors(up, normalLocal);
+  sceneGroup.quaternion.copy(q);
+  // position at face surface
+  sceneGroup.position.copy(normalLocal.clone().multiplyScalar(HALF));
+  sceneGroup.userData.faceKey = f.key;
+  cube.add(sceneGroup);
+  faceMeta.set(f.key, { group: sceneGroup, normalLocal });
+});
+
+/* ────────────────────────────────────────────────────────────
+   ROTATION + INTERACTION
+   ──────────────────────────────────────────────────────────── */
+let rotX = -0.35, rotY = -0.55;
+let velY = 0.0042, velX = 0.0008;
+let dragging = false;
+let dragMoved = 0;
+let lastPX = 0, lastPY = 0;
+let targetRotX = null, targetRotY = null;
+let pinned = false;
+let cameraFlying = false;     // when true, no auto-spin
+let cameraReturning = false;
+const ROT_LERP = 0.14;
+
+function applyCubeRotation(){
+  cube.rotation.x = rotX;
+  cube.rotation.y = rotY;
+}
+
+/* identify front-facing face in world space */
+const _v = new THREE.Vector3();
+const _q = new THREE.Quaternion();
+let frontKey = null;
+function frontFace(){
+  let best = null, bestZ = -Infinity;
+  for (const f of FACES){
+    _v.set(f.pos[0], f.pos[1], f.pos[2]);
+    _q.setFromEuler(new THREE.Euler(rotX, rotY, 0));
+    _v.applyQuaternion(_q);
+    if (_v.z > bestZ){ bestZ = _v.z; best = f; }
+  }
+  return best;
+}
+function updateFaceHUD(){
+  const f = frontFace();
+  if (!f || f.key === frontKey) return;
+  frontKey = f.key;
+  document.getElementById('ftEye').textContent = `World ${f.no}`;
+  document.getElementById('ftTitle').textContent = f.title;
+  [...document.querySelectorAll('.dock button')].forEach(b => {
+    b.classList.toggle('active', b.dataset.key === f.key);
+  });
+}
+
+/* DRAG */
+canvas.addEventListener('pointerdown', e => {
+  if (cameraFlying || document.getElementById('page').classList.contains('open')) return;
+  dragging = true; dragMoved = 0;
+  lastPX = e.clientX; lastPY = e.clientY;
+  canvas.classList.add('dragging');
+  canvas.setPointerCapture(e.pointerId);
+  targetRotX = targetRotY = null;
+  document.getElementById('hint').classList.add('gone');
+});
+canvas.addEventListener('pointermove', e => {
+  if (!dragging) return;
+  const dx = e.clientX - lastPX;
+  const dy = e.clientY - lastPY;
+  lastPX = e.clientX; lastPY = e.clientY;
+  rotY += dx * 0.008;
+  rotX += dy * 0.008;
+  rotX = Math.max(-1.0, Math.min(1.0, rotX));
+  dragMoved += Math.abs(dx) + Math.abs(dy);
+});
+function endDrag(e){
+  if (!dragging) return;
+  dragging = false;
+  canvas.classList.remove('dragging');
+  try { canvas.releasePointerCapture(e.pointerId); } catch(_){}
+}
+canvas.addEventListener('pointerup', endDrag);
+canvas.addEventListener('pointercancel', endDrag);
+canvas.addEventListener('pointerleave', endDrag);
+
+/* WHEEL spin */
+window.addEventListener('wheel', e => {
+  if (cameraFlying || document.getElementById('page').classList.contains('open')) return;
+  rotY += e.deltaY * 0.002;
+  rotX += e.deltaX * 0.002;
+  rotX = Math.max(-1.0, Math.min(1.0, rotX));
+  targetRotX = targetRotY = null;
+}, { passive:true });
+
+/* CLICK & DOUBLE-CLICK */
+const raycaster = new THREE.Raycaster();
+const pointer = new THREE.Vector2();
+function hitFace(e){
+  const rect = canvas.getBoundingClientRect();
+  pointer.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+  pointer.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
+  raycaster.setFromCamera(pointer, camera);
+  // collect cube + scene meshes
+  const targets = [cubeMesh];
+  for (const f of FACES) {
+    const m = faceMeta.get(f.key);
+    if (m) m.group.traverse(o => { if (o.isMesh) targets.push(o); });
+  }
+  const hits = raycaster.intersectObjects(targets, false);
+  if (!hits.length) return null;
+  const hit = hits[0];
+  // walk up to find a face owner
+  let o = hit.object;
+  while (o) {
+    if (o.userData && o.userData.faceKey) return o.userData.faceKey;
+    o = o.parent;
+  }
+  // if it was the cubeMesh itself, use the face index of the geometry
+  if (hit.object === cubeMesh) {
+    const order = ['film','book','home','comedy','about','esports'];
+    return order[Math.floor(hit.faceIndex / 2)];
+  }
+  return null;
+}
+
+let lastClickT = 0, lastClickFace = '';
+canvas.addEventListener('click', e => {
+  if (dragMoved > 6) { dragMoved = 0; return; }
+  const f = hitFace(e);
+  if (!f) return;
+  const now = performance.now();
+  if (f === lastClickFace && now - lastClickT < 400) {
+    // DOUBLE-CLICK: fly camera into face
+    lastClickT = 0; lastClickFace = '';
+    flyToFace(f);
+    return;
+  }
+  lastClickT = now; lastClickFace = f;
+  // single click → just rotate to face it
+  snapTo(f);
+});
+
+/* SNAP rotation so the face points to +Z */
+const FACE_TARGET_ROT = {};
+FACES.forEach(f => {
+  const nx = f.pos[0], ny = f.pos[1], nz = f.pos[2];
+  let tx = 0, ty = 0;
+  if (nz === 1)       { tx = 0; ty = 0; }
+  else if (nz === -1) { tx = 0; ty = Math.PI; }
+  else if (nx === 1)  { tx = 0; ty = -Math.PI/2; }
+  else if (nx === -1) { tx = 0; ty = Math.PI/2; }
+  else if (ny === 1)  { tx = Math.PI/2; ty = 0; }
+  else if (ny === -1) { tx = -Math.PI/2; ty = 0; }
+  FACE_TARGET_ROT[f.key] = { x: tx, y: ty };
+});
+function nearestEq(cur, target){
+  return target + Math.round((cur - target) / (Math.PI*2)) * (Math.PI*2);
+}
+function snapTo(key){
+  const t = FACE_TARGET_ROT[key];
+  if (!t) return;
+  targetRotX = nearestEq(rotX, t.x);
+  targetRotY = nearestEq(rotY, t.y);
+  pinned = true;
+  document.getElementById('hint').classList.add('gone');
+}
+
+/* CAMERA FLY-IN  */
+let camStart = new THREE.Vector3(), camEnd = new THREE.Vector3();
+let lookStart = new THREE.Vector3(), lookEnd = new THREE.Vector3();
+let flyT0 = 0, flyDur = 1100;
+let postFlyPage = null;
+function flyToFace(key){
+  // first stop auto spin / drag motion, snap rotation toward face
+  snapTo(key);
+  cameraFlying = true;
+  canvas.classList.add('zooming');
+  // compute target camera position: face center in world + (face normal in world) * distance
+  // Apply the *target* cube rotation so the face is straight ahead
+  const t = FACE_TARGET_ROT[key];
+  const qTarget = new THREE.Quaternion().setFromEuler(new THREE.Euler(t.x, t.y, 0));
+  const facePos = new THREE.Vector3(...FACES.find(f=>f.key===key).pos);
+  const localCenter = facePos.clone().multiplyScalar(HALF);
+  const worldCenter = localCenter.clone().applyQuaternion(qTarget); // since cube will be at target rotation
+  const worldNormal = facePos.clone().normalize().applyQuaternion(qTarget);
+  camStart.copy(camera.position);
+  lookStart.copy(CAM_DEFAULT_LOOK).sub(camera.position).normalize().multiplyScalar(0.001).add(camera.position);
+  // current look point (approx): in front of camera 0.001 — we will instead store current "looking at" as origin
+  lookStart.copy(new THREE.Vector3(0,0,0));
+  camEnd.copy(worldCenter.clone().add(worldNormal.clone().multiplyScalar(1.85)));
+  lookEnd.copy(worldCenter);
+  flyT0 = performance.now();
+  postFlyPage = key;
+  // hide face title while zooming
+  document.getElementById('faceTitle').classList.add('hidden');
+}
+function returnCamera(){
+  cameraFlying = true; cameraReturning = true;
+  canvas.classList.add('zooming');
+  camStart.copy(camera.position);
+  lookStart.set(0,0,0);
+  camEnd.copy(CAM_DEFAULT_POS);
+  lookEnd.copy(CAM_DEFAULT_LOOK);
+  flyT0 = performance.now();
+  postFlyPage = null;
+  // hide page now
+  closePage();
+  document.getElementById('faceTitle').classList.remove('hidden');
+}
+function ease(t){ return t<.5 ? 2*t*t : 1 - Math.pow(-2*t+2, 3)/2; }
+
+/* PAGE overlay */
+const pageEl = document.getElementById('page');
+function openPage(key){
+  const f = FACES.find(x => x.key === key);
+  if (!f) return;
+  pageEl.dataset.key = key;
+  document.getElementById('pgKicker').textContent = `World ${f.no}`;
+  document.getElementById('pgTitle').textContent  = f.title;
+  document.getElementById('pgLede').textContent   = f.lede;
+  document.getElementById('pgYear').textContent   = '2026';
+  document.getElementById('pgFmt').textContent    = f.fmt;
+  document.getElementById('pgStat').textContent   = f.stat;
+  const list = document.getElementById('pgList');
+  list.innerHTML = '';
+  f.items.forEach(([t, yr]) => {
+    const li = document.createElement('li');
+    li.innerHTML = `<span>${t}</span><span class="yr">${yr || ''}</span>`;
+    list.appendChild(li);
+  });
+  pageEl.classList.add('open');
+}
+function closePage(){
+  pageEl.classList.remove('open');
+}
+document.getElementById('pageBack').addEventListener('click', () => {
+  // start camera return
+  returnCamera();
+});
+
+/* keyboard */
+document.addEventListener('keydown', e => {
+  const open = pageEl.classList.contains('open');
+  if (e.key === 'Escape') {
+    if (open) returnCamera();
+  }
+  if (cameraFlying || open) return;
+  const ORDER = FACES.map(f => f.key);
+  if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
+    let i = ORDER.indexOf(frontKey);
+    if (i < 0) i = 0;
+    i = (i + (e.key==='ArrowRight'?1:-1) + ORDER.length) % ORDER.length;
+    snapTo(ORDER[i]);
+  } else if (e.key === 'Enter') {
+    if (frontKey) flyToFace(frontKey);
+  }
+});
+
+/* DOCK chips */
+const dock = document.getElementById('dock');
+FACES.forEach(f => {
+  const b = document.createElement('button');
+  b.dataset.key = f.key;
+  b.innerHTML = `<span class="swatch" style="background:#${f.baseColor.toString(16).padStart(6,'0')};"></span>${f.title}`;
+  // single click: snap, double click: fly
+  let _t = 0;
+  b.addEventListener('click', () => {
+    const now = performance.now();
+    if (now - _t < 400) { flyToFace(f.key); _t = 0; return; }
+    _t = now;
+    snapTo(f.key);
+  });
+  dock.appendChild(b);
+});
+
+/* ────────────────────────────────────────────────────────────
+   ANIMATE
+   ──────────────────────────────────────────────────────────── */
+const homeGroup     = faceMeta.get('home').group;
+const esportsGroup  = faceMeta.get('esports').group;
+const comedyGroup   = faceMeta.get('comedy').group;
+const filmGroup     = faceMeta.get('film').group;
+
+function tick(){
+  const tNow = performance.now();
+  const t = tNow / 1000;
+
+  /* rotation update */
+  if (cameraFlying) {
+    const p = Math.min(1, (tNow - flyT0) / flyDur);
+    const e = ease(p);
+    camera.position.lerpVectors(camStart, camEnd, e);
+    const look = new THREE.Vector3().lerpVectors(lookStart, lookEnd, e);
+    camera.lookAt(look);
+    if (p >= 1) {
+      cameraFlying = false;
+      canvas.classList.remove('zooming');
+      if (cameraReturning) {
+        cameraReturning = false;
+      } else if (postFlyPage) {
+        // reveal page!
+        openPage(postFlyPage);
+      }
+    }
+  } else if (!dragging) {
+    if (targetRotX !== null && targetRotY !== null) {
+      rotX += (targetRotX - rotX) * ROT_LERP;
+      rotY += (targetRotY - rotY) * ROT_LERP;
+      if (Math.abs(targetRotX - rotX) < 0.001 && Math.abs(targetRotY - rotY) < 0.001) {
+        rotX = targetRotX; rotY = targetRotY;
+        targetRotX = targetRotY = null;
+      }
+    } else if (!pinned && !pageEl.classList.contains('open')) {
+      rotY += velY;
+      rotX += velX * Math.sin(t * 0.4);
+    }
+  }
+  applyCubeRotation();
+  updateFaceHUD();
+
+  // shadow follows cube position (cube is at origin so stays)
+  shadow.material.opacity = 0.18;
+
+  /* HOME chimney smoke */
+  if (homeGroup && homeGroup.userData.smokes) {
+    homeGroup.userData.smokes.forEach((s, i) => {
+      s.t += 0.022;
+      const cyc = (s.t % 4) / 4; // 0..1
+      const anchor = homeGroup.userData.smokeAnchor;
+      s.mesh.position.x = anchor.x + Math.sin(s.t * 1.7 + i) * 0.04;
+      s.mesh.position.z = anchor.z + Math.cos(s.t * 1.4 + i) * 0.04;
+      s.mesh.position.y = anchor.y + cyc * 1.4;
+      const sc = (s.baseScale + cyc * 0.6) * V;
+      s.mesh.scale.set(sc, sc, sc);
+      s.mesh.material = s.mesh.material; // ensure mat
+      s.mesh.material.opacity = 1.0;
+      s.mesh.material.transparent = true;
+      s.mesh.material.opacity = Math.max(0, 1 - cyc);
+      s.mesh.material.depthWrite = false;
+    });
+  }
+
+  /* ESPORTS soldier — leg shuffle + body bob + look around */
+  if (esportsGroup && esportsGroup.userData.legL) {
+    const phase = Math.sin(t * 5.2);
+    esportsGroup.userData.legL.rotation.x =  phase * 0.7;
+    esportsGroup.userData.legR.rotation.x = -phase * 0.7;
+    // arms slight shake
+    esportsGroup.userData.armL.rotation.x = phase * 0.15;
+    esportsGroup.userData.armR.rotation.x = -phase * 0.15;
+    // soldier body bob
+    esportsGroup.userData.legL.parent.position.y = Math.abs(phase) * V * 0.4;
+    // head/body look around: rotate the whole soldier slightly
+    esportsGroup.userData.legL.parent.rotation.y = Math.sin(t * 0.7) * 0.5;
+    // helmet small tilt
+    esportsGroup.userData.helmet.rotation.z = Math.sin(t * 1.3) * 0.05;
+  }
+
+  /* COMEDY spotlight flicker (subtle) */
+  if (comedyGroup && comedyGroup.userData.cone) {
+    comedyGroup.userData.cone.children.forEach((m, i) => {
+      const base = 0.10 - i*0.008;
+      m.material.opacity = Math.max(0, base + Math.sin(t*7 + i)*0.012);
+    });
+  }
+
+  /* FILM — gently rotate the reels */
+  if (filmGroup) {
+    filmGroup.children.forEach(c => {
+      // no specific handle stored; we'll just keep reel block as-is
+    });
+  }
+
+  renderer.render(scene, camera);
+  requestAnimationFrame(tick);
+}
+requestAnimationFrame(tick);
+
+/* clean exit when page opens: pause anim if needed (we already check open state above) */
+
+})();
+</script>
+</body>
+</html>
