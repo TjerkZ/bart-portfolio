@@ -80,6 +80,13 @@ canvas {
   filter: blur(1.5px);
 }
 
+/* On phones the cube fills the screen — clouds just crowd it. Hide them. */
+@media (max-width: 768px) {
+  .sky-cloud {
+    display: none;
+  }
+}
+
 @layer utilities {
   /* Used by Esports page — subtle scanlines */
   .vibe-scanlines {

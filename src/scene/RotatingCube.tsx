@@ -32,6 +32,9 @@ export function RotatingCube() {
   const lastFrontId = useRef<FaceId | null>(null);
   // Angular velocity (radians per 60fps-frame) around world X / Y, used for coast.
   const velocity = useRef({ x: 0, y: 0 });
+  // Last pointer position — we derive deltas from this instead of e.movementX/Y,
+  // which is 0 on most touch devices.
+  const lastPointer = useRef({ x: 0, y: 0 });
 
   const idleAxis = useMemo(
     () => new THREE.Vector3(0.3, 1, 0.05).normalize(),
@@ -48,14 +51,18 @@ export function RotatingCube() {
 
     const onMove = (e: PointerEvent) => {
       if (!groupRef.current) return;
-      const dx = e.movementX * DRAG_SENSITIVITY;
-      const dy = e.movementY * DRAG_SENSITIVITY;
+      // Derive movement from absolute position (works on touch, unlike movementX/Y).
+      const mx = e.clientX - lastPointer.current.x;
+      const my = e.clientY - lastPointer.current.y;
+      lastPointer.current = { x: e.clientX, y: e.clientY };
+      const dx = mx * DRAG_SENSITIVITY;
+      const dy = my * DRAG_SENSITIVITY;
       groupRef.current.rotateOnWorldAxis(worldY, dx);
       groupRef.current.rotateOnWorldAxis(worldX, dy);
       // Track recent speed (lightly smoothed) so a release becomes a flick.
       velocity.current.y = velocity.current.y * 0.5 + dx * 0.5;
       velocity.current.x = velocity.current.x * 0.5 + dy * 0.5;
-      dragMovedRef.current += Math.abs(e.movementX) + Math.abs(e.movementY);
+      dragMovedRef.current += Math.abs(mx) + Math.abs(my);
       if (dragMovedRef.current > DRAG_THRESHOLD_PX) {
         wasDragRef.current = true;
       }
@@ -84,6 +91,7 @@ export function RotatingCube() {
       e.stopPropagation();
       setIsDragging(true);
       dragMovedRef.current = 0;
+      lastPointer.current = { x: e.nativeEvent.clientX, y: e.nativeEvent.clientY };
       // Grabbing the cube cancels any leftover coast.
       velocity.current.x = 0;
       velocity.current.y = 0;
