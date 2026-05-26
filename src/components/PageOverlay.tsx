@@ -150,10 +150,19 @@ export function PageOverlay({
   return (
     <motion.div
       key={vibe}
-      initial={{ opacity: 0, scale: 1.04 }}
-      animate={{ opacity: 1, scale: 1 }}
-      exit={{ opacity: 0, scale: 0.98 }}
-      transition={{ duration: 0.42, ease: [0.22, 1, 0.36, 1] }}
+      initial={{ opacity: 0, scale: 1.05 }}
+      animate={{
+        opacity: 1,
+        scale: 1,
+        // Hold off until the camera has mostly finished orbiting to the face.
+        transition: { duration: 0.5, delay: 0.6, ease: [0.22, 1, 0.36, 1] },
+      }}
+      exit={{
+        opacity: 0,
+        scale: 1.03,
+        // Leave quickly so the cube is revealed for the orbit.
+        transition: { duration: 0.3, ease: [0.4, 0, 1, 1] },
+      }}
       className={`fixed inset-0 z-20 overflow-auto ${v.bg} ${v.text}`}
     >
       <VibeDecoration vibe={vibe} />
