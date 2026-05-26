@@ -14,6 +14,12 @@ const DRAG_SENSITIVITY = 0.006;
 const DRAG_THRESHOLD_PX = 5;
 const CLICK_GUARD_MS = 80;
 
+// Spin momentum after release
+const FRICTION = 0.95; // velocity retained per 60fps-frame (~1.5–2s coast)
+const MIN_VELOCITY = 0.0008; // below this, momentum is zeroed
+const IDLE_TAKEOVER_SPEED = 0.01; // momentum speed above which idle drift is suppressed
+const IDLE_SPEED = 0.22;
+
 export function RotatingCube() {
   const groupRef = useRef<THREE.Group>(null);
   const location = useLocation();
@@ -24,6 +30,8 @@ export function RotatingCube() {
   const wasDragRef = useRef(false);
   const dragMovedRef = useRef(0);
   const lastFrontId = useRef<FaceId | null>(null);
+  // Angular velocity (radians per 60fps-frame) around world X / Y, used for coast.
+  const velocity = useRef({ x: 0, y: 0 });
 
   const idleAxis = useMemo(
     () => new THREE.Vector3(0.3, 1, 0.05).normalize(),
@@ -40,8 +48,13 @@ export function RotatingCube() {
 
     const onMove = (e: PointerEvent) => {
       if (!groupRef.current) return;
-      groupRef.current.rotateOnWorldAxis(worldY, e.movementX * DRAG_SENSITIVITY);
-      groupRef.current.rotateOnWorldAxis(worldX, e.movementY * DRAG_SENSITIVITY);
+      const dx = e.movementX * DRAG_SENSITIVITY;
+      const dy = e.movementY * DRAG_SENSITIVITY;
+      groupRef.current.rotateOnWorldAxis(worldY, dx);
+      groupRef.current.rotateOnWorldAxis(worldX, dy);
+      // Track recent speed (lightly smoothed) so a release becomes a flick.
+      velocity.current.y = velocity.current.y * 0.5 + dx * 0.5;
+      velocity.current.x = velocity.current.x * 0.5 + dy * 0.5;
       dragMovedRef.current += Math.abs(e.movementX) + Math.abs(e.movementY);
       if (dragMovedRef.current > DRAG_THRESHOLD_PX) {
         wasDragRef.current = true;
@@ -71,6 +84,9 @@ export function RotatingCube() {
       e.stopPropagation();
       setIsDragging(true);
       dragMovedRef.current = 0;
+      // Grabbing the cube cancels any leftover coast.
+      velocity.current.x = 0;
+      velocity.current.y = 0;
     },
     [onHome],
   );
@@ -81,7 +97,25 @@ export function RotatingCube() {
 
     if (onHome) {
       if (!isDragging) {
-        group.rotateOnWorldAxis(idleAxis, delta * 0.22);
+        const v = velocity.current;
+        const speed = Math.hypot(v.x, v.y);
+        const k = delta * 60; // frame-rate-independent factor
+
+        // Coast in the flick direction, decaying via friction.
+        if (speed > MIN_VELOCITY) {
+          group.rotateOnWorldAxis(worldY, v.y * k);
+          group.rotateOnWorldAxis(worldX, v.x * k);
+          const decay = Math.pow(FRICTION, k);
+          v.x *= decay;
+          v.y *= decay;
+        } else {
+          v.x = 0;
+          v.y = 0;
+        }
+
+        // Idle drift, suppressed while momentum is strong, ramps back as it fades.
+        const idleBlend = Math.max(0, 1 - speed / IDLE_TAKEOVER_SPEED);
+        group.rotateOnWorldAxis(idleAxis, delta * IDLE_SPEED * idleBlend);
       }
     } else {
       group.quaternion.slerp(identityQuat, Math.min(1, delta * 3));
