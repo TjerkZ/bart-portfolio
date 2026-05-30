@@ -34,13 +34,20 @@ export function ComedyPage() {
     <PageOverlay
       vibe="comedy"
       kicker="World 05 · Comedy"
-      title={'Is this thing on?'}
-      lede="Comedy has been a large part of my life — professionally, personally, artistically. Life mostly boils down to having a laugh, and I believe that in everything I do."
+      title={'Live, Laugh, Laugh again.'}
+      lede="Comedy has been a large part of my life, professionally, personally, artistically. Life mostly boils down to having a laugh, and I believe that in everything I do."
     >
       <section className="space-y-5">
-        <h2 className="font-display text-3xl md:text-4xl font-black text-[#ffd86b]">
-          Bad Writers
-        </h2>
+        <div className="flex items-center gap-4">
+          <img
+            src="/images/comedy/bad-writers-logo.png"
+            alt="Bad Writers logo"
+            className="w-16 h-16 rounded-xl object-cover border border-white/10"
+          />
+          <h2 className="font-display text-3xl md:text-4xl font-black text-[#ffd86b]">
+            Bad Writers
+          </h2>
+        </div>
         <p className="text-[#fff5d1]/85 leading-relaxed max-w-3xl">
           A comedy and writing channel I started with Noa Mouritzen-Ward in
           2023. We upload sketches, podcasts, write-alongs (my favourite), and
@@ -87,30 +94,53 @@ export function ComedyPage() {
             </li>
           ))}
         </ul>
-        <a
-          href="https://youtu.be/zPyAX1o3Wak"
-          target="_blank"
-          rel="noreferrer"
-          className="inline-flex items-center gap-1 font-semibold text-[#ffd86b] hover:underline"
-        >
-          Watch the “Sketch Ideas” series <span aria-hidden>↗</span>
-        </a>
       </section>
 
-      <section className="mt-16 grid md:grid-cols-2 gap-8">
-        <div className="rounded-2xl bg-white/[0.06] border border-white/10 p-6 md:p-8">
-          <p className="text-[11px] font-bold tracking-[0.24em] uppercase text-[#ffd86b] mb-3">
-            Write-along series
+      <section className="mt-16 grid md:grid-cols-[auto_1fr] gap-6 items-start">
+        <img
+          src="/images/comedy/sketch-ideas.png"
+          alt="Sketch Ideas"
+          className="w-full md:w-64 rounded-2xl object-cover border border-white/10"
+        />
+        <div>
+          <h2 className="font-display text-3xl md:text-4xl font-black text-[#ffd86b]">
+            Sketch Ideas
+          </h2>
+          <p className="mt-3 text-[#fff5d1]/85 leading-relaxed max-w-2xl">
+            Of the sketches that I have made, many sketches never gotten through the idea stage.
           </p>
-          <h3 className="font-display text-2xl font-bold mb-3">
-            Ass Scratches Back: The Movie
-          </h3>
-          <p className="text-[#fff5d1]/80 leading-relaxed">
-            In <em>Passion of the Chris</em>, the titular Chris Shakespeare
-            believes the only way to save art is by getting his Noir Horror
-            Thriller made. Because Chris is a figment of our imagination, we
-            write it <em>as if</em> we were Chris. And Chris is not a good
-            writer.
+          <p className="mt-2 text-[#fff5d1]/85 leading-relaxed max-w-2xl">
+            Therefore we created the series &ldquo;Sketch Ideas&rdquo; where we go through ideas that never came to fruition unfortunately (or fortunately in some cases).
+          </p>
+          <a
+            href="https://youtu.be/zPyAX1o3Wak"
+            target="_blank"
+            rel="noreferrer"
+            className="inline-flex items-center gap-1 mt-4 font-semibold text-[#ffd86b] hover:underline"
+          >
+            Check out the series here <span aria-hidden>↗</span>
+          </a>
+        </div>
+      </section>
+      <section className="mt-16 grid md:grid-cols-[auto_1fr] gap-6 items-start">
+        <img
+          src="/images/comedy/ass-scratches-back.png"
+          alt="Ass Scratches Back: The Movie title page"
+          className="w-full md:w-56 rounded-2xl object-cover border border-white/10"
+        />
+        <div>
+          <h2 className="font-display text-3xl md:text-4xl font-black text-[#ffd86b]">
+            Write-along Series — Writing w/ Bad Writers
+          </h2>
+          <p className="mt-1 text-[#fff5d1]/70 font-semibold">(Ass Scratches Back: The Movie)</p>
+          <p className="mt-3 text-[#fff5d1]/85 leading-relaxed max-w-2xl">
+            Ever want to learn the joy of writing, especially with others? Watch the Write-along series on the Bad Writers!
+          </p>
+          <p className="mt-2 text-[#fff5d1]/85 leading-relaxed max-w-2xl">
+            The premise of the series goes like this: In the movie &lsquo;Passion of the Chris&rsquo; (2023), the titular character &lsquo;Chris Shakespeare&rsquo; believes he has to &ldquo;save art&rdquo;, and the only way he can do that, is getting his film made, which is &ldquo;Ass Scratches Back: The Movie&rdquo;, a Noir Horror Thriller, written by Chris Shakespeare himself.
+          </p>
+          <p className="mt-2 text-[#fff5d1]/85 leading-relaxed max-w-2xl">
+            Because Chris Shakespeare is a figment of our own imagination, we in turn write it as if we were Chris. And Chris is not a good writer...
           </p>
           <a
             href="https://youtube.com/playlist?list=PLF0zE5uSarfh8tSPCiTfwZ0y9G901oiRm"
@@ -118,17 +148,23 @@ export function ComedyPage() {
             rel="noreferrer"
             className="inline-flex items-center gap-1 mt-4 font-semibold text-[#ffd86b] hover:underline"
           >
-            Join the quest <span aria-hidden>↗</span>
+            Join us on our quest to get Chris Shakespeare's voice heard! <span aria-hidden>↗</span>
           </a>
         </div>
-        <div className="rounded-2xl bg-white/[0.06] border border-white/10 p-6 md:p-8">
-          <p className="text-[11px] font-bold tracking-[0.24em] uppercase text-[#ffd86b] mb-3">
+      </section>
+
+      <section className="mt-16 grid md:grid-cols-[auto_1fr] gap-6 items-start">
+        <img
+          src="/images/comedy/bad-writers-watermark.jpg"
+          alt="The Bad Writers Podcast"
+          className="w-full md:w-56 rounded-2xl object-cover border border-white/10"
+        />
+        <div>
+          <h2 className="font-display text-3xl md:text-4xl font-black text-[#ffd86b]">
             The Bad Writers Podcast
-          </p>
-          <h3 className="font-display text-2xl font-bold mb-3">w/ Burt & Noa</h3>
-          <p className="text-[#fff5d1]/80 leading-relaxed">
-            A podcast about writing, film and comedy. New episodes when we
-            stop arguing about what to call them.
+          </h2>
+          <p className="mt-3 text-[#fff5d1]/85 leading-relaxed max-w-2xl">
+            A podcast about writing, film and comedy. New episodes when we stop arguing about what to call them.
           </p>
           <a
             href="https://youtu.be/6FG7Y-NfelY"
