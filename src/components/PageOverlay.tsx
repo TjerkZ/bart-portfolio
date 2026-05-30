@@ -111,7 +111,7 @@ interface PageHeroProps {
   vibe: FaceId;
   kicker: string;
   title: string;
-  lede: string;
+  lede?: string;
 }
 
 export function PageHero({ vibe, kicker, title, lede }: PageHeroProps) {
@@ -124,9 +124,11 @@ export function PageHero({ vibe, kicker, title, lede }: PageHeroProps) {
       <h1 className="font-display font-black leading-[0.92] tracking-tight text-5xl md:text-7xl lg:text-[8.5rem]">
         {title}
       </h1>
-      <p className="text-lg md:text-xl leading-relaxed opacity-85 max-w-2xl">
-        {lede}
-      </p>
+      {lede && (
+        <p className="text-lg md:text-xl leading-relaxed opacity-85 max-w-2xl">
+          {lede}
+        </p>
+      )}
     </header>
   );
 }
@@ -135,7 +137,7 @@ interface PageOverlayProps {
   vibe: FaceId;
   kicker: string;
   title: string;
-  lede: string;
+  lede?: string;
   children?: ReactNode;
 }
 
