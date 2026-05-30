@@ -10,17 +10,15 @@ export function HomeHint() {
       transition={{ duration: 0.8, delay: 0.3 }}
       className="fixed inset-0 z-10 pointer-events-none"
     >
-      <FaceTitleHUD />
-      {/* Top-left brand */}
-      <div className="absolute top-5 left-5 pointer-events-auto inline-flex flex-col gap-0.5 px-4 py-2.5 rounded-2xl bg-white/80 backdrop-blur-md border border-white/60 shadow-soft">
-        <span className="font-display font-black text-base md:text-lg text-ink leading-none tracking-tight">
+      {/* Centered brand name — sized to match the section label */}
+      <div className="fixed inset-x-0 top-6 md:top-8 z-10 flex justify-center pointer-events-none px-4">
+        <h1 className="font-display font-black text-3xl md:text-5xl text-ink leading-none text-center drop-shadow-[0_2px_0_rgba(255,255,255,0.7)]">
           Bart van de Steeg
           <span className="text-[#ff5470]">.</span>
-        </span>
-        <span className="font-display italic text-[11px] md:text-xs text-ink-soft leading-none mt-1">
-          aka Burt Burlington
-        </span>
+        </h1>
       </div>
+
+      <FaceTitleHUD />
 
       {/* Top-right status */}
       <div className="absolute top-5 right-5 pointer-events-auto inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/80 backdrop-blur-md border border-white/60 shadow-soft text-xs md:text-sm font-semibold text-ink">

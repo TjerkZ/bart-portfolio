@@ -164,7 +164,7 @@ export function RotatingCube() {
           castShadow
           receiveShadow
         >
-          <meshStandardMaterial color="#f3e7cf" />
+          <meshStandardMaterial color="#111111" />
         </RoundedBox>
         {FACES.map((face) => (
           <Face key={face.id} config={face} />

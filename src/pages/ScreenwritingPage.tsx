@@ -1,17 +1,14 @@
 import { PageOverlay } from '../components/PageOverlay';
 
 interface Project {
-  slug: string;
   title: string;
   year: string;
   status: string;
   logline: string;
-  thumbnail?: string;
 }
 
 const screenplays: Project[] = [
   {
-    slug: 'INT. EVERYWHERE — PRE-PRODUCTION',
     title: 'Oh, Flinkies! It\'s Fazmagoo!',
     year: '2026',
     status: 'In production',
@@ -19,7 +16,6 @@ const screenplays: Project[] = [
       'Fazmagoo, a dimension-hopping cosmic wizard cursed with accompanying the most miserable people in the world, takes on Gregory — a deeply insecure man struggling to come to terms with the fact that his girlfriend\'s ex was extremely well-endowed.',
   },
   {
-    slug: 'INT. APARTMENT — NIGHT',
     title: 'My Joint with John',
     year: '2025',
     status: 'Festival run',
@@ -27,104 +23,76 @@ const screenplays: Project[] = [
       'Following a devastating pitch, a struggling writer smokes a joint with his best friend — leading to a conversation that alters their lives forever.',
   },
   {
-    slug: 'INT. STUDIO — DAY',
     title: 'The Answering Machine',
     year: '2024',
     status: 'Finished script',
-    logline: 'In development. Logline coming soon.',
+    logline: 'A tragic story of a family being torn apart by loss in the family.',
   },
   {
-    slug: 'INT. WRITER\'S ROOM — DAY',
     title: 'Passion of the Chris',
     year: '2023',
     status: 'Released',
     logline:
       'A brilliant writer is divinely chosen to save the world by writing the magnum opus of God.',
-    thumbnail: '/images/scripts/thumbnails/passion-of-the-chris.png',
   },
 ];
 
-interface VaultItem {
+interface FinishedScript {
   title: string;
-  src: string;
+  year: string;
+  type: string;
+  genre: string;
+  logline: string;
 }
 
-const scriptVault: VaultItem[] = [
-  { title: 'The Isle of Nytruss', src: '/images/scripts/thumbnails/the-isle-of-nytruss.png' },
-  { title: 'Cabin in the Snow', src: '/images/scripts/thumbnails/cabin-in-the-snow.png' },
-  { title: 'Carpe Diem, Bitch', src: '/images/scripts/thumbnails/carpe-diem-bitch.png' },
-  { title: 'Draugr Episode 3', src: '/images/scripts/thumbnails/draugr-episode-3.png' },
-  { title: 'Dulken\'s Delusion', src: '/images/scripts/thumbnails/dulkens-delusion.png' },
-  { title: 'Flat Earth Voyage', src: '/images/scripts/thumbnails/flat-earth-voyage.png' },
-  { title: 'Innergenerational Sacrifice', src: '/images/scripts/thumbnails/innergenerational-sacrifice.png' },
-  { title: 'Iron Rush', src: '/images/scripts/thumbnails/iron-rush.png' },
-  { title: 'Jitters', src: '/images/scripts/thumbnails/jitters.png' },
-  { title: 'Live Shot', src: '/images/scripts/thumbnails/live-shot.png' },
-  { title: 'Loathe of Fear', src: '/images/scripts/thumbnails/loathe-of-fear.png' },
-  { title: 'Lonely Son', src: '/images/scripts/thumbnails/lonely-son.png' },
-  { title: 'Noise Lust', src: '/images/scripts/thumbnails/noise-lust.png' },
-  { title: 'Space Race 2', src: '/images/scripts/thumbnails/space-race-2.png' },
-  { title: 'Stavn Momman', src: '/images/scripts/thumbnails/stavn-momman.png' },
-  { title: 'Under the Spell of Alice', src: '/images/scripts/thumbnails/under-the-spell-of-alice.png' },
+const finishedScripts: FinishedScript[] = [
+  { title: 'Locked up in Geezer Grove', year: '2025', type: 'Feature Film', genre: 'Drama, Comedy', logline: 'A depressed young man is placed under suicide watch but is held in the local nursery home for the elderly.' },
+  { title: 'Cabin in the Snow', year: '2020', type: 'Short Film', genre: 'Drama, Crime', logline: "A man flees from society to an isolated cabin, where he meets society's worst." },
+  { title: 'Carpe Diem, Bitch', year: '2019', type: 'Short Film', genre: 'Drama', logline: 'A bunch of youngsters feel like they are not getting enough out of life. But when they decide to go on an adventure this New Years Eve, they got more than they bargained for.' },
+  { title: "Dulken's Delusion", year: '2021', type: 'Short Film', genre: 'Drama, Horror', logline: 'A doctor realizes that he and the man who is hospitalized with a flesh-eating disease share more in common than he originally thought.' },
+  { title: 'Flat Earth Voyage', year: '2020', type: 'Feature Film', genre: 'Drama, Mockumentary', logline: "A somber boy decides to find his raison d'être by traveling to the edge of the world and video tape his entire journey to discover that the world, is indeed flat." },
+  { title: 'Innergenerational Sacrifice', year: '2022', type: 'Short Film', genre: 'Tragedy, Fantasy', logline: 'A family drama that involves all past family members and future, culminates into a fierce battle in the name of justice.' },
+  { title: 'Iron Rush', year: '2019', type: 'Short Film', genre: 'Drama, Romance, Historical', logline: 'A foreign army is marching towards the gates of the town, and to stand a chance, every man and child join the fight, while melting every piece of metal down to construct weapons in the fight.' },
+  { title: 'Lonely Son', year: '2022', type: 'Short Film', genre: 'Drama', logline: "A father worries about his son who hasn't been the same ever since he lost his mother." },
+  { title: 'Stavn Momman', year: '2022', type: 'Feature Film', genre: 'Horror, Thriller', logline: 'By maritime law, Captain Boomsma is prohibited from leaving the freight ship that is in the docks in Cairo. With all the crew back home to their families, Boomsma has to survive on the ship on rations and ingenuity. But something lurks beneath the waters that is aware that the Captain is now without a crew.' },
+  { title: 'The Isle of Nytruss', year: '2020', type: 'Feature Film', genre: 'Fantasy, Adventure', logline: 'To help out the people of village, the children investigate the island of Nytruss to find the reason why the vegetation of the island has grown black and dead, and uncover a secret that none of them dared to imagine.' },
+  { title: 'The Buyer and the Seller', year: '2025', type: 'Short Film', genre: 'Drama, Crime', logline: 'An arms dealer is skeptical of his buyer and gets into a conversation with him about life and death.' },
+  { title: 'Neanderthal', year: '2022', type: 'Short Film', genre: 'Tragedy', logline: 'A boy with an abnormally large forehead is teased, and his family want to do nothing else than to support him.' },
+  { title: 'Into the Wilderness', year: '2025', type: 'Short Film', genre: 'Action, Drama', logline: 'A man is cornered in his tent in the middle of the woods by a bear that wants nothing else than feast on his flesh.' },
 ];
 
-const prose: VaultItem[] = [
-  { title: 'Bluffing in Derado', src: '/images/prose/bluffing-in-derado.png' },
-  { title: 'Exiiogist Expedition', src: '/images/prose/exiiogist-expedition.png' },
-  { title: 'Home for Christmas', src: '/images/prose/home-for-christmas.png' },
-  { title: 'Red Pastures', src: '/images/prose/red-pastures.png' },
-  { title: 'Space Race 2', src: '/images/prose/space-race-2.png' },
-  { title: 'Window to the Stars', src: '/images/prose/window-to-the-stars.png' },
+interface ProseStory {
+  title: string;
+  year: string;
+  genre: string;
+  cover: string;
+  text: string;
+  link?: { label: string; href: string };
+}
+
+const prose: ProseStory[] = [
+  { title: 'Exiiogist Expedition', year: '2022', genre: 'Sci-Fi, Horror, Thriller', cover: '/images/prose/exiiogist-expedition-bart.png', text: 'A stranded exiiologist on a frozen alien world is being hunted by a relentless presence. As isolation and exhaustion blur reality, his fight for survival leads him toward a fragile hope of rescue. But on a planet where the past refuses to stay dead, the thing chasing him may be far more familiar than he dares to believe.', link: { label: 'Check out the Audiobook', href: 'https://youtu.be/HvNr29Bi7iE' } },
+  { title: 'Bluffing in Derado', year: '2023', genre: 'Sci-Fi, Drama, Crime', cover: '/images/prose/bluffing-in-derado-bart.png', text: 'A washed-up poker legend with a galaxy-wide reputation wakes up buried in debt, hunted by dangerous creditors, and drifting through a neon gambling world where lives are wagered as easily as money. But as the pressure closes in, he realizes losing everything might not be the thing he fears most.' },
+  { title: 'Home for Christmas', year: '2023', genre: 'Sci-Fi, Action, Thriller', cover: '/images/prose/home-for-christmas-bart.png', text: "On Christmas Eve, a hardened bounty hunter is sent to capture a brilliant fugitive hiding on a remote prison planet, but in turn uncovers a truth that shatters everything he believes about himself. As the hunt spirals into a deadly game of identity and survival, he's forced to question whether escaping the prison was ever the real crime." },
+  { title: 'Red Pastures', year: '2023', genre: 'Sci-Fi, Drama, Horror', cover: '/images/prose/red-pastures-bart.png', text: '"Me and my family love living off the land, But I never expected the land living off us." A young girl experiences farm life on an extraterrestrial planet and learns the beauty, and the horror of futuristic agriculture.' },
+  { title: 'Space Race 2: USA vs China', year: '2023', genre: 'Soft Sci-Fi, Comedy', cover: '/images/prose/space-race-2-bart.png', text: "The U.S. have found themselves back into a space race, but this time it's with China, and they go above and beyond to beat them..." },
+  { title: 'Window to the Stars', year: '2023', genre: 'Sci-Fi, Fantasy, Drama', cover: '/images/prose/window-to-the-stars-bart.png', text: 'A woman wakes up in her childhood home, but when she looks through her window, all she can see is the vastness of space above, around, and below.' },
 ];
 
 function ProjectBlock({ p }: { p: Project }) {
   return (
-    <article className="relative pl-6 md:pl-10 py-5 border-l-2 border-[#a04040]/30 grid md:grid-cols-[1fr_auto] gap-6 items-start">
+    <article className="grid md:grid-cols-[1fr_auto] gap-6 items-start py-5 border-b border-[#1a1a1a]/10 last:border-b-0">
       <div>
-        <span className="absolute -left-[5px] top-7 w-2 h-2 bg-[#a04040] rounded-full" />
-        <p className="font-mono text-[10px] md:text-[11px] tracking-wider text-[#a04040] uppercase">
-          {p.slug}
-        </p>
-        <h3 className="font-display font-bold text-2xl md:text-3xl mt-1 leading-tight">
+        <h3 className="font-display font-black text-3xl md:text-4xl leading-tight">
           {p.title}
         </h3>
         <p className="font-mono text-xs text-[#1a1a1a]/55 mt-1">
           {p.year && <span>{p.year} · </span>}
           {p.status}
         </p>
-        <p className="mt-3 text-[#1a1a1a]/80 leading-relaxed max-w-2xl">
-          {p.logline}
-        </p>
+        <p className="mt-3 text-[#1a1a1a]/80 leading-relaxed max-w-2xl">{p.logline}</p>
       </div>
-      {p.thumbnail && (
-        <div className="w-32 md:w-36 shrink-0 rounded-md overflow-hidden shadow-soft border border-[#1a1a1a]/15">
-          <img
-            src={p.thumbnail}
-            alt={p.title}
-            loading="lazy"
-            className="block w-full aspect-[2/3] object-cover"
-          />
-        </div>
-      )}
     </article>
-  );
-}
-
-function CoverTile({ item }: { item: VaultItem }) {
-  return (
-    <div className="space-y-2">
-      <div className="rounded-md overflow-hidden shadow-soft border border-[#1a1a1a]/12 bg-white">
-        <img
-          src={item.src}
-          alt={item.title}
-          loading="lazy"
-          className="block w-full aspect-[2/3] object-cover"
-        />
-      </div>
-      <p className="font-mono text-[11px] tracking-wider text-[#1a1a1a]/70 px-1">
-        {item.title}
-      </p>
-    </div>
   );
 }
 
@@ -132,13 +100,18 @@ export function ScreenwritingPage() {
   return (
     <PageOverlay
       vibe="screenwriting"
-      kicker="World 03 · Screenwriting"
-      title={'The script\nis the start.'}
-      lede="Every film starts on a page. Here are the scripts that became films, the ones still being filmed, and the ones waiting in the vault for a producer to fall in love."
+      kicker="World 03 · Writing"
+      title={'Life is a story,\nand storytelling\nis life.'}
     >
+      <div className="max-w-3xl space-y-4 text-[#1a1a1a]/80 leading-relaxed mb-12">
+        <p>Screenwriting was my first love, and it's remained the driving force behind my creative life ever since. Over the years, I've written more than 100+ scripts spanning short films, sketches, animation, commercials, and feature films.</p>
+        <p>While drama and comedy are where I feel most at home, I've recently been exploring the darker corners of storytelling through horror.</p>
+        <p>I'm an intensely visual storyteller, and what excites me most about writing is the act of creating something entirely from nothing, to building worlds, characters, and moments that never existed before and bringing them to life on the page.</p>
+      </div>
+
       <section className="space-y-2">
-        <h2 className="font-display text-2xl md:text-3xl font-bold mb-6">
-          Featured screenplays
+        <h2 className="font-display text-3xl md:text-4xl font-bold mb-6">
+          Filmed Screenplays
         </h2>
         <div className="space-y-1">
           {screenplays.map((p) => (
@@ -148,31 +121,46 @@ export function ScreenwritingPage() {
       </section>
 
       <section className="mt-16">
-        <h2 className="font-display text-2xl md:text-3xl font-bold mb-2">
-          The script vault
-        </h2>
-        <p className="text-[#1a1a1a]/65 mb-6 max-w-2xl">
-          Finished and in-development scripts looking for a home. Ask if you'd
-          like to read one.
-        </p>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-5">
-          {scriptVault.map((s) => (
-            <CoverTile key={s.title} item={s} />
+        <h2 className="font-display text-3xl md:text-4xl font-bold mb-6">Finished Scripts</h2>
+        <div className="grid md:grid-cols-2 gap-5">
+          {finishedScripts.map((s) => (
+            <article key={s.title} className="rounded-2xl border border-[#1a1a1a]/12 bg-white/70 backdrop-blur-sm shadow-soft p-5 md:p-6">
+              <div className="flex items-baseline justify-between gap-3">
+                <h3 className="font-display font-bold text-xl md:text-2xl leading-tight">{s.title}</h3>
+                <span className="font-mono text-xs text-[#1a1a1a]/55 shrink-0">{s.year}</span>
+              </div>
+              <p className="font-mono text-[11px] tracking-wider text-[#a04040] uppercase mt-1">
+                {s.type} · {s.genre}
+              </p>
+              <p className="mt-3 text-[#1a1a1a]/80 leading-relaxed">{s.logline}</p>
+            </article>
           ))}
         </div>
       </section>
 
       <section className="mt-16">
-        <h2 className="font-display text-2xl md:text-3xl font-bold mb-2">
-          Literary writing
-        </h2>
-        <p className="text-[#1a1a1a]/65 mb-6 max-w-2xl">
-          Short stories — the prose I write between films. Most live on as PDFs;
-          ask for any you'd like to read.
-        </p>
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-5">
+        <h2 className="font-display text-3xl md:text-4xl font-bold mb-2">Literary Writing</h2>
+        <div className="max-w-3xl space-y-2 text-[#1a1a1a]/75 mb-8">
+          <p>I've always had a deep love for books, especially Sci-Fi.</p>
+          <p>Its limitless, otherworldly nature inspired me to create universes of my own, worlds and ideas I brought to life through short stories.</p>
+        </div>
+        <div className="grid md:grid-cols-2 gap-8">
           {prose.map((p) => (
-            <CoverTile key={p.title} item={p} />
+            <article key={p.title} className="grid grid-cols-[auto_1fr] gap-5 items-start">
+              <div className="w-32 md:w-36 shrink-0 rounded-md overflow-hidden shadow-soft border border-[#1a1a1a]/12 bg-white">
+                <img src={p.cover} alt={p.title} loading="lazy" className="block w-full aspect-[2/3] object-cover" />
+              </div>
+              <div>
+                <h3 className="font-display font-bold text-xl md:text-2xl leading-tight">{p.title}</h3>
+                <p className="font-mono text-[11px] tracking-wider text-[#a04040] uppercase mt-1">{p.year} · {p.genre}</p>
+                <p className="mt-2 text-[#1a1a1a]/80 leading-relaxed text-sm">{p.text}</p>
+                {p.link && (
+                  <a href={p.link.href} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 mt-2 font-semibold text-[#a04040] hover:underline">
+                    {p.link.label} <span aria-hidden>↗</span>
+                  </a>
+                )}
+              </div>
+            </article>
           ))}
         </div>
       </section>

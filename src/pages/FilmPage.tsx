@@ -1,4 +1,5 @@
 import { PageOverlay } from '../components/PageOverlay';
+import { Carousel } from '../components/Carousel';
 
 interface Film {
   title: string;
@@ -42,6 +43,16 @@ const films: Film[] = [
     ],
   },
   {
+    title: 'The Answering Machine',
+    year: '2024',
+    status: 'Released',
+    logline: 'A loss in the family tears apart a modern family.',
+    role: 'Writer · Director · Production Design · Sound',
+    watch: { label: 'Watch it here', href: 'https://youtu.be/p2vFvi7msWE' },
+    cover: '/images/films/answering-machine/answering-machine.png',
+    images: ['/images/films/answering-machine/answering-machine.png'],
+  },
+  {
     title: 'Passion of the Chris',
     year: '2023',
     status: 'Released',
@@ -76,7 +87,7 @@ const promos: PromoSpot[] = [
     year: '2019',
     title: 'Holiday Greetings — Corporate video',
     contribution: 'Writing · Producing · Directing',
-    watch: { label: 'Watch it', href: '#' },
+    watch: { label: 'Watch it', href: 'https://youtu.be/nwbNu4qtC1k' },
     images: [
       '/images/promo/daf/daf-thumbnail-1.png',
       '/images/promo/daf/daf-thumbnail-2.png',
@@ -87,7 +98,7 @@ const promos: PromoSpot[] = [
     year: '2019',
     title: 'Promotional video — democratic school',
     contribution: 'Writing · Producing · Directing',
-    watch: { label: 'Watch it', href: '#' },
+    watch: { label: 'Watch it', href: 'https://youtu.be/92H1Pq6oJ8A' },
     images: [
       '/images/promo/doe040/doe040-1.jpg',
       '/images/promo/doe040/doe040-2.jpg',
@@ -110,51 +121,22 @@ const promos: PromoSpot[] = [
 ];
 
 function FilmEntry({ f }: { f: Film }) {
+  const gallery = f.images.length > 0 ? f.images : [f.cover];
   return (
     <article className="space-y-4">
-      <div className="aspect-video w-full rounded-xl border border-white/10 bg-black overflow-hidden">
-        <img
-          src={f.cover}
-          alt={f.title}
-          loading="lazy"
-          className="block w-full h-full object-cover"
-        />
-      </div>
+      <Carousel images={gallery} alt={f.title} />
       <div className="flex flex-wrap items-baseline justify-between gap-3">
-        <h3 className="font-display font-black text-3xl md:text-4xl">
-          {f.title}
-        </h3>
+        <h3 className="font-display font-black text-3xl md:text-4xl">{f.title}</h3>
         <p className="font-mono text-xs text-[#e8b94a] uppercase tracking-[0.18em]">
           {f.year} · {f.status}
         </p>
       </div>
       <p className="text-[#f6f1e6]/80 leading-relaxed max-w-3xl">{f.logline}</p>
-      <p className="font-mono text-xs text-[#f6f1e6]/55 uppercase tracking-wider">
-        {f.role}
-      </p>
+      <p className="font-mono text-xs text-[#f6f1e6]/55 uppercase tracking-wider">{f.role}</p>
       {f.watch && (
-        <a
-          href={f.watch.href}
-          target="_blank"
-          rel="noreferrer"
-          className="inline-flex items-center gap-1 font-semibold text-[#e8b94a] hover:underline"
-        >
+        <a href={f.watch.href} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 font-semibold text-[#e8b94a] hover:underline">
           {f.watch.label} <span aria-hidden>↗</span>
         </a>
-      )}
-      {f.images.length > 1 && (
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-2 pt-2">
-          {f.images.slice(1).map((src) => (
-            <div key={src} className="aspect-video bg-black rounded overflow-hidden">
-              <img
-                src={src}
-                alt=""
-                loading="lazy"
-                className="block w-full h-full object-cover"
-              />
-            </div>
-          ))}
-        </div>
       )}
     </article>
   );
@@ -165,9 +147,12 @@ export function FilmPage() {
     <PageOverlay
       vibe="film"
       kicker="World 04 · Film"
-      title={'The frame.'}
-      lede="Short films I co-wrote, produced, directed, or starred in. Most start as scripts in the Screenwriting room and end up here, somewhere between a hard drive and a festival queue."
+      title={'Film.'}
+      lede="Explore a curated collection of short films and commercial projects I've brought to life over the years, where I took on a wide range of creative and production roles throughout the process."
     >
+      <p className="text-[#f6f1e6]/80 leading-relaxed max-w-3xl -mt-6 mb-12">
+        From scriptwriting and pre-production to location scouting, cinematography, directing, acting, sound design, and editing, each project reflects a hands-on approach to storytelling from concept to final cut.
+      </p>
       <section className="space-y-16">
         {films.map((f) => (
           <FilmEntry key={f.title} f={f} />
@@ -214,18 +199,7 @@ export function FilmPage() {
                   </>
                 )}
               </p>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
-                {p.images.map((src) => (
-                  <div key={src} className="aspect-video bg-black rounded overflow-hidden">
-                    <img
-                      src={src}
-                      alt=""
-                      loading="lazy"
-                      className="block w-full h-full object-cover"
-                    />
-                  </div>
-                ))}
-              </div>
+              <Carousel images={p.images} alt={`${p.client} — ${p.title}`} />
             </article>
           ))}
         </div>

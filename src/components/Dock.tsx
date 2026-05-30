@@ -26,7 +26,7 @@ export function Dock() {
             >
               <span
                 className="block w-6 h-6 md:w-7 md:h-7 rounded-md shadow-chip"
-                style={{ backgroundColor: f.color }}
+                style={{ backgroundColor: f.dockColor }}
               />
               <span className="whitespace-nowrap">{f.label}</span>
             </Link>
