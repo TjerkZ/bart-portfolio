@@ -47,6 +47,7 @@ const updates: Update[] = [
     title: 'Launched the “Burt Burlington” YouTube channel',
     body:
       'After a lifetime obsession I decided to dip my toes into one of my true loves — Counter-Strike. I watch it religiously and have been breathing it for the last decade. With this channel I want to express my sincere love for the game while drumming it up for old and new fans alike.',
+    link: { label: '@BurtBurlington', href: 'https://www.youtube.com/@BurtBurlington' },
   },
   {
     date: '08-08-2023',
@@ -54,7 +55,7 @@ const updates: Update[] = [
     title: 'Work commenced on DreamCatcher',
     body:
       'After the success of Trump Quotes, Burlington Apps is back with another release — DreamCatcher. An app to organise, analyse and most importantly save your dreams while you still remember them.',
-    link: { label: 'burlingtonapps.com', href: 'https://www.burlingtonapps.com' },
+    link: { label: 'burlingtonapps.nl', href: 'https://www.burlingtonapps.nl' },
   },
   {
     date: '08-07-2023',
@@ -70,7 +71,7 @@ const updates: Update[] = [
     title: 'Trump Quotes app launches',
     body:
       'Burlington Apps is proud to announce the launch of our first app — Trump Quotes! Get hit with one of the hilarious things Trump has said, then challenge your friends in arcade mode on how well they know the 45th and 47th president of the US.',
-    link: { label: 'burlingtonapps.com', href: 'https://www.burlingtonapps.com' },
+    link: { label: 'burlingtonapps.nl', href: 'https://www.burlingtonapps.nl' },
   },
   {
     date: '19-07-2021',
@@ -86,9 +87,40 @@ export function HomePage() {
     <PageOverlay
       vibe="home"
       kicker="World 01 · Home"
-      title={'Welcome\nhome.'}
-      lede="A cozy corner of the internet — where I keep what I make, what I'm working on, and what I love. Latest from the workshop:"
+      title={'Welcome!'}
     >
+      <section className="max-w-3xl">
+        <h2 className="font-display font-black text-3xl md:text-4xl">
+          Who is Bart van de Steeg?
+        </h2>
+        <p className="mt-3 text-ink/80 leading-relaxed">
+          Good question. I don't know.
+        </p>
+        <p className="mt-3 text-ink/80 leading-relaxed">I would say I am:</p>
+        <ul className="mt-2 space-y-1 text-ink/85">
+          <li>· Comedian</li>
+          <li>· Raconteur Podcaster</li>
+          <li>· Indie Filmmaker</li>
+          <li>· Narrative Writer &amp; Screenwriter</li>
+          <li>· Gag-writer</li>
+          <li>· Esports Pundit</li>
+        </ul>
+        <p className="mt-4 text-ink/80 leading-relaxed">
+          Otherwise known as <strong>&lsquo;C.R.I.N.G.E.&rsquo;</strong>
+        </p>
+        <p className="mt-2 text-ink/80 leading-relaxed">
+          To fully understand what C.R.I.N.G.E is, check out the{' '}
+          <a href="/about" className="font-semibold text-[#d4732d] hover:underline">
+            &lsquo;About Bart&rsquo;
+          </a>{' '}
+          section.
+        </p>
+      </section>
+
+      <h2 className="font-display font-black text-3xl md:text-4xl mt-14 mb-6">
+        What have I been up to?
+      </h2>
+
       <ul className="space-y-6">
         {updates.map((u) => (
           <li
