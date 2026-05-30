@@ -5,9 +5,11 @@ interface CarouselProps {
   /** Tailwind aspect class for the frame. */
   aspect?: string;
   className?: string;
+  /** Accessible label for the images (e.g. the project title). */
+  alt?: string;
 }
 
-export function Carousel({ images, aspect = 'aspect-video', className = '' }: CarouselProps) {
+export function Carousel({ images, aspect = 'aspect-video', className = '', alt = '' }: CarouselProps) {
   const [i, setI] = useState(0);
   if (images.length === 0) return null;
 
@@ -18,7 +20,7 @@ export function Carousel({ images, aspect = 'aspect-video', className = '' }: Ca
     <div className={`relative ${aspect} w-full rounded-xl overflow-hidden bg-black ${className}`}>
       <img
         src={images[i]}
-        alt=""
+        alt={images.length > 1 ? `${alt} (${i + 1} of ${images.length})` : alt}
         loading="lazy"
         className="block w-full h-full object-cover select-none"
         draggable={false}

@@ -39,6 +39,7 @@ export function AboutPage() {
             <button
               type="button"
               onClick={() => setPersona('bart')}
+              aria-pressed={persona === 'bart'}
               className={`px-4 py-1.5 rounded-full transition ${persona === 'bart' ? 'bg-ink text-paper' : 'text-ink/70 hover:text-ink'}`}
             >
               About Bart
@@ -46,6 +47,7 @@ export function AboutPage() {
             <button
               type="button"
               onClick={() => setPersona('burt')}
+              aria-pressed={persona === 'burt'}
               className={`px-4 py-1.5 rounded-full transition ${persona === 'burt' ? 'bg-ink text-paper' : 'text-ink/70 hover:text-ink'}`}
             >
               About Burt

@@ -5,7 +5,6 @@ interface Project {
   year: string;
   status: string;
   logline: string;
-  thumbnail?: string;
 }
 
 const screenplays: Project[] = [
@@ -94,11 +93,6 @@ function ProjectBlock({ p }: { p: Project }) {
         </p>
         <p className="mt-3 text-[#1a1a1a]/80 leading-relaxed max-w-2xl">{p.logline}</p>
       </div>
-      {p.thumbnail && (
-        <div className="w-32 md:w-36 shrink-0 rounded-md overflow-hidden shadow-soft border border-[#1a1a1a]/15">
-          <img src={p.thumbnail} alt={p.title} loading="lazy" className="block w-full aspect-[2/3] object-cover" />
-        </div>
-      )}
     </article>
   );
 }

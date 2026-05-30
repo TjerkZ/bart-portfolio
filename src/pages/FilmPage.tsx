@@ -124,7 +124,7 @@ function FilmEntry({ f }: { f: Film }) {
   const gallery = f.images.length > 0 ? f.images : [f.cover];
   return (
     <article className="space-y-4">
-      <Carousel images={gallery} />
+      <Carousel images={gallery} alt={f.title} />
       <div className="flex flex-wrap items-baseline justify-between gap-3">
         <h3 className="font-display font-black text-3xl md:text-4xl">{f.title}</h3>
         <p className="font-mono text-xs text-[#e8b94a] uppercase tracking-[0.18em]">
@@ -199,7 +199,7 @@ export function FilmPage() {
                   </>
                 )}
               </p>
-              <Carousel images={p.images} />
+              <Carousel images={p.images} alt={`${p.client} — ${p.title}`} />
             </article>
           ))}
         </div>
