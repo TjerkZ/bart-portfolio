@@ -32,6 +32,11 @@ export interface FaceConfig {
   /** Surface color of the face plane. Also used by the Dock chip swatch, and as
    *  a tint multiplied over `texture` when both are set. */
   color: string;
+  /** Solid color shown in the Dock chip swatch for this face (independent of
+   *  the face texture tint in `color`). */
+  dockColor: string;
+  /** Tagline shown above the big section label in the cube HUD. */
+  hudTagline: string;
   /** Optional URL to a tileable image (PNG/JPG/WEBP). When set, the face plane
    *  uses this texture instead of a solid color. The Dock chip still uses `color`. */
   texture?: string;
@@ -51,33 +56,39 @@ export const FACES: FaceConfig[] = [
     normal: [0, 0, 1],
     rotation: [Math.PI / 2, 0, 0],
     color: '#ffffff',
+    dockColor: '#3aa655',
+    hudTagline: 'News & Quick introduction',
     texture: '/textures/grass.png',
     textureRepeat: 4,
-    tooltip: 'Welcome in — latest updates live here 🏡',
+    tooltip: 'Welcome!',
     Diorama: HomeDiorama,
   },
   {
     id: 'about',
-    label: 'About',
+    label: 'About & Contact',
     path: '/about',
     normal: [1, 0, 0],
     rotation: [0, 0, -Math.PI / 2],
     color: '#ffffff',
+    dockColor: '#e8c14a',
+    hudTagline: 'Get to know me or shoot me a message!',
     texture: '/textures/About_me_contact.png',
     textureRepeat: 1,
-    tooltip: 'Curious who Bart is? Step inside.',
+    tooltip: "Don't be shy!",
     Diorama: AboutDiorama,
   },
   {
     id: 'screenwriting',
-    label: 'Screenwriting',
+    label: 'Writing',
     path: '/screenwriting',
     normal: [-1, 0, 0],
     rotation: [0, 0, Math.PI / 2],
     color: '#ffffff',
+    dockColor: '#27406b',
+    hudTagline: 'Where I hone my storytelling',
     texture: '/textures/carpet.png',
     textureRepeat: 1,
-    tooltip: 'The scripts behind the films ✍️',
+    tooltip: 'Read a script or short story while you are here!',
     Diorama: ScreenwritingDiorama,
   },
   {
@@ -87,7 +98,9 @@ export const FACES: FaceConfig[] = [
     normal: [0, 1, 0],
     rotation: [0, 0, 0],
     color: '#a988b8',
-    tooltip: 'Short films, music videos, promo work 🎬',
+    dockColor: '#8a5cb8',
+    hudTagline: 'Films, Sketches, and Commercial videos',
+    tooltip: "Welcome to the 'Bart Cinematic Universe' (BCU)",
     Diorama: FilmDiorama,
   },
   {
@@ -97,7 +110,9 @@ export const FACES: FaceConfig[] = [
     normal: [0, 0, -1],
     rotation: [-Math.PI / 2, 0, 0],
     color: '#d4707b',
-    tooltip: 'Stand-up, sketches, and Bad Writers 🎤',
+    dockColor: '#d4404a',
+    hudTagline: 'Bad Writers, Jokes, Sketches & Stand-Up',
+    tooltip: 'Please Laugh...',
     Diorama: ComedyDiorama,
   },
   {
@@ -107,9 +122,11 @@ export const FACES: FaceConfig[] = [
     normal: [0, -1, 0],
     rotation: [Math.PI, 0, 0],
     color: '#ffffff',
+    dockColor: '#8a5cb8',
+    hudTagline: 'My foray into',
     texture: '/textures/gamergunk.png',
     textureRepeat: 4,
-    tooltip: 'Counter-Strike obsession — Burt Burlington 🎮',
+    tooltip: "My alternate persona lives here...",
     Diorama: EsportsDiorama,
   },
 ];
