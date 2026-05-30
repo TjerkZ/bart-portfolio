@@ -34,7 +34,6 @@ const screenplays: Project[] = [
     status: 'Released',
     logline:
       'A brilliant writer is divinely chosen to save the world by writing the magnum opus of God.',
-    thumbnail: '/images/scripts/thumbnails/passion-of-the-chris.png',
   },
 ];
 
