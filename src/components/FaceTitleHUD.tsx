@@ -7,7 +7,7 @@ export function FaceTitleHUD() {
   const face = id ? findFaceById(id) : null;
 
   return (
-    <div className="fixed inset-x-0 top-32 md:top-40 z-10 flex justify-center pointer-events-none">
+    <div className="fixed inset-x-0 top-44 md:top-52 z-10 flex justify-center pointer-events-none">
       <AnimatePresence mode="wait">
         {face && (
           <motion.div
