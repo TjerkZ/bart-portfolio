@@ -7,9 +7,11 @@ interface CarouselProps {
   className?: string;
   /** Accessible label for the images (e.g. the project title). */
   alt?: string;
+  /** object-fit for the image. 'cover' crops to fill; 'contain' shows the full image (letterboxed). */
+  fit?: 'cover' | 'contain';
 }
 
-export function Carousel({ images, aspect = 'aspect-video', className = '', alt = '' }: CarouselProps) {
+export function Carousel({ images, aspect = 'aspect-video', className = '', alt = '', fit = 'cover' }: CarouselProps) {
   const [i, setI] = useState(0);
   if (images.length === 0) return null;
 
@@ -22,7 +24,7 @@ export function Carousel({ images, aspect = 'aspect-video', className = '', alt 
         src={images[i]}
         alt={images.length > 1 ? `${alt} (${i + 1} of ${images.length})` : alt}
         loading="lazy"
-        className="block w-full h-full object-cover select-none"
+        className={`block w-full h-full ${fit === 'contain' ? 'object-contain' : 'object-cover'} select-none`}
         draggable={false}
       />
       {images.length > 1 && (

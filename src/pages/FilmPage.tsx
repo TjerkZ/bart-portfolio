@@ -79,6 +79,10 @@ interface PromoSpot {
   contribution: string;
   watch?: { label: string; href: string };
   images: string[];
+  /** object-fit for the carousel images. Defaults to Carousel's 'cover'. */
+  fit?: 'cover' | 'contain';
+  /** Tailwind aspect class for the carousel frame. Defaults to Carousel's 'aspect-video'. */
+  aspect?: string;
 }
 
 const promos: PromoSpot[] = [
@@ -117,6 +121,8 @@ const promos: PromoSpot[] = [
       '/images/promo/jumbo/jumbo-3.jpeg',
       '/images/promo/jumbo/jumbo-4.jpeg',
     ],
+    fit: 'contain',
+    aspect: 'aspect-[3/4]',
   },
 ];
 
@@ -198,7 +204,7 @@ export function FilmPage() {
                   </>
                 )}
               </p>
-              <Carousel images={p.images} alt={`${p.client} — ${p.title}`} />
+              <Carousel images={p.images} alt={`${p.client} — ${p.title}`} fit={p.fit} aspect={p.aspect} />
             </article>
           ))}
         </div>
