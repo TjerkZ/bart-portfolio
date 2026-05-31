@@ -118,6 +118,11 @@ export function EsportsPage() {
 
       <section className="mt-12 md:mt-16">
         <article className="rounded-2xl border border-[#41e1c7]/25 bg-white/[0.04] p-6 md:p-8">
+          <img
+            src="/images/esports/burlington-discord.png"
+            alt="Burlington's Big Shots Discord"
+            className="w-full rounded-xl border border-[#41e1c7]/20 mb-5"
+          />
           <h2 className="font-display font-black text-2xl md:text-3xl text-[#d8e7ff]">
             Join the Burlington's Big Shots Discord Server!
           </h2>

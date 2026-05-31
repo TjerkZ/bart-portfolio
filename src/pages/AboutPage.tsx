@@ -19,6 +19,7 @@ const socials: Array<{ label: string; href: string; icon: string }> = [
   { label: 'X', href: 'https://x.com/BurtBurlington', icon: '/images/social/x.svg' },
   { label: 'Instagram', href: 'https://www.instagram.com/burt_burlington/', icon: '/images/social/instagram.svg' },
   { label: 'Letterboxd', href: 'https://letterboxd.com/Burt_Burlington/', icon: '/images/social/letterboxd.svg' },
+  { label: 'LinkedIn', href: 'https://www.linkedin.com/in/bart-van-de-steeg-0a65aa373/', icon: '/images/social/linkedin.svg' },
 ];
 
 export function AboutPage() {
