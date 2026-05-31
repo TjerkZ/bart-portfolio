@@ -59,7 +59,7 @@ export function AboutPage() {
           <div className="mt-5 space-y-4 text-ink/85 leading-relaxed">
             <figure className="float-right ml-5 mb-3 w-36 md:w-44">
               <img
-                src="/images/about/bart.png"
+                src="/images/about/bart.jpg"
                 alt="Bart van de Steeg"
                 className="w-full rounded-xl object-cover border border-ink/10 shadow-soft"
               />
@@ -82,7 +82,7 @@ export function AboutPage() {
           <div className="mt-5 space-y-4 text-ink/85 leading-relaxed">
             <figure className="float-right ml-5 mb-3 w-36 md:w-44">
               <img
-                src="/images/about/burt.png"
+                src="/images/about/burt.jpg"
                 alt="Burt Burlington"
                 className="w-full rounded-xl object-cover border border-ink/10 shadow-soft"
               />
