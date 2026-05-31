@@ -27,7 +27,6 @@ export function AboutPage() {
   return (
     <PageOverlay
       vibe="about"
-      kicker="World 02 · About & Contact"
       title={'Who is\nBart?'}
     >
       <section className="max-w-3xl">

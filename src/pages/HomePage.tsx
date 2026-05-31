@@ -86,7 +86,6 @@ export function HomePage() {
   return (
     <PageOverlay
       vibe="home"
-      kicker="World 01 · Home"
       title={'Welcome!'}
     >
       <section className="max-w-3xl">

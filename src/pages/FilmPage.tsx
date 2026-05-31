@@ -146,7 +146,6 @@ export function FilmPage() {
   return (
     <PageOverlay
       vibe="film"
-      kicker="World 04 · Film"
       title={'Film.'}
       lede="Explore a curated collection of short films and commercial projects I've brought to life over the years, where I took on a wide range of creative and production roles throughout the process."
     >

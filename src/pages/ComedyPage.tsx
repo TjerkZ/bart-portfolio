@@ -33,7 +33,6 @@ export function ComedyPage() {
   return (
     <PageOverlay
       vibe="comedy"
-      kicker="World 05 · Comedy"
       title={'Live, Laugh, Laugh again.'}
       lede="Comedy has been a large part of my life, professionally, personally, artistically. Life mostly boils down to having a laugh, and I believe that in everything I do."
     >

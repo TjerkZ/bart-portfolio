@@ -19,7 +19,6 @@ export function EsportsPage() {
   return (
     <PageOverlay
       vibe="esports"
-      kicker="World 06 · Esports"
       title={'I love talking about Counter Strike, and if you do too, consider subscribing!'}
       lede="A lifetime Counter-Strike obsession turned into a YouTube channel, a podcast, and a discord. Below: the live numbers and what's playing."
     >

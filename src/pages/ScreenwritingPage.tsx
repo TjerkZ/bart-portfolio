@@ -107,7 +107,6 @@ export function ScreenwritingPage() {
   return (
     <PageOverlay
       vibe="screenwriting"
-      kicker="World 03 · Writing"
       title={'Life is a story,\nand storytelling\nis life.'}
     >
       <div className="max-w-3xl space-y-4 text-[#1a1a1a]/80 leading-relaxed mb-12">

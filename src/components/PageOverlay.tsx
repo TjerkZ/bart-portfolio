@@ -2,6 +2,7 @@ import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import type { ReactNode } from 'react';
 import type { FaceId } from '../scene/faces';
+import { findFaceById } from '../scene/faces';
 
 interface VibeStyle {
   bg: string;
@@ -111,17 +112,18 @@ interface PageHeroProps {
   vibe: FaceId;
   kicker: string;
   title: string;
+  titleClassName?: string;
   lede?: string;
 }
 
-export function PageHero({ vibe, kicker, title, lede }: PageHeroProps) {
+export function PageHero({ vibe, kicker, title, titleClassName, lede }: PageHeroProps) {
   const v = VIBE_STYLES[vibe];
   return (
     <header className="space-y-5 max-w-3xl">
       <p className={`text-[11px] md:text-xs font-bold tracking-[0.28em] uppercase ${v.kicker}`}>
         {kicker}
       </p>
-      <h1 className="font-display font-black leading-[0.92] tracking-tight text-5xl md:text-7xl lg:text-[8.5rem]">
+      <h1 className={`font-display font-black leading-[0.92] tracking-tight ${titleClassName ?? 'text-5xl md:text-7xl lg:text-[8.5rem]'}`}>
         {title}
       </h1>
       {lede && (
@@ -135,8 +137,9 @@ export function PageHero({ vibe, kicker, title, lede }: PageHeroProps) {
 
 interface PageOverlayProps {
   vibe: FaceId;
-  kicker: string;
+  kicker?: string;
   title: string;
+  titleClassName?: string;
   lede?: string;
   children?: ReactNode;
 }
@@ -145,10 +148,12 @@ export function PageOverlay({
   vibe,
   kicker,
   title,
+  titleClassName,
   lede,
   children,
 }: PageOverlayProps) {
   const v = VIBE_STYLES[vibe];
+  const kickerText = kicker ?? findFaceById(vibe)?.hudTagline ?? '';
   return (
     <motion.div
       key={vibe}
@@ -170,7 +175,7 @@ export function PageOverlay({
       <VibeDecoration vibe={vibe} />
       <BackPill vibe={vibe} />
       <div className="relative z-10 max-w-6xl mx-auto px-6 md:px-12 pt-24 pb-32">
-        <PageHero vibe={vibe} kicker={kicker} title={title} lede={lede} />
+        <PageHero vibe={vibe} kicker={kickerText} title={title} titleClassName={titleClassName} lede={lede} />
         {children && <div className="mt-12 md:mt-16">{children}</div>}
       </div>
     </motion.div>
