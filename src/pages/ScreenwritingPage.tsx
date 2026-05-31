@@ -1,4 +1,6 @@
+import { useState } from 'react';
 import { PageOverlay } from '../components/PageOverlay';
+import { ScriptViewer } from '../components/ScriptViewer';
 
 interface Project {
   title: string;
@@ -43,11 +45,14 @@ interface FinishedScript {
   type: string;
   genre: string;
   logline: string;
+  /** When set, a "Read script" button opens this PDF in the in-page viewer. */
+  pdf?: string;
 }
 
 const finishedScripts: FinishedScript[] = [
   { title: 'Locked up in Geezer Grove', year: '2025', type: 'Feature Film', genre: 'Drama, Comedy', logline: 'A depressed young man is placed under suicide watch but is held in the local nursery home for the elderly.' },
-  { title: 'Cabin in the Snow', year: '2020', type: 'Short Film', genre: 'Drama, Crime', logline: "A man flees from society to an isolated cabin, where he meets society's worst." },
+  // PoC: this entry has a placeholder PDF wired up so the viewer is demonstrable.
+  { title: 'Cabin in the Snow', year: '2020', type: 'Short Film', genre: 'Drama, Crime', logline: "A man flees from society to an isolated cabin, where he meets society's worst.", pdf: '/scripts/sample-script.pdf' },
   { title: 'Carpe Diem, Bitch', year: '2019', type: 'Short Film', genre: 'Drama', logline: 'A bunch of youngsters feel like they are not getting enough out of life. But when they decide to go on an adventure this New Years Eve, they got more than they bargained for.' },
   { title: "Dulken's Delusion", year: '2021', type: 'Short Film', genre: 'Drama, Horror', logline: 'A doctor realizes that he and the man who is hospitalized with a flesh-eating disease share more in common than he originally thought.' },
   { title: 'Flat Earth Voyage', year: '2020', type: 'Feature Film', genre: 'Drama, Mockumentary', logline: "A somber boy decides to find his raison d'être by traveling to the edge of the world and video tape his entire journey to discover that the world, is indeed flat." },
@@ -97,6 +102,8 @@ function ProjectBlock({ p }: { p: Project }) {
 }
 
 export function ScreenwritingPage() {
+  const [activeScript, setActiveScript] = useState<FinishedScript | null>(null);
+
   return (
     <PageOverlay
       vibe="screenwriting"
@@ -133,6 +140,15 @@ export function ScreenwritingPage() {
                 {s.type} · {s.genre}
               </p>
               <p className="mt-3 text-[#1a1a1a]/80 leading-relaxed">{s.logline}</p>
+              {s.pdf && (
+                <button
+                  type="button"
+                  onClick={() => setActiveScript(s)}
+                  className="inline-flex items-center gap-1.5 mt-4 px-4 py-2 rounded-full text-sm font-semibold bg-[#a04040] text-white hover:bg-[#8a3636] transition"
+                >
+                  Read script <span aria-hidden>↗</span>
+                </button>
+              )}
             </article>
           ))}
         </div>
@@ -164,6 +180,14 @@ export function ScreenwritingPage() {
           ))}
         </div>
       </section>
+
+      {activeScript?.pdf && (
+        <ScriptViewer
+          url={activeScript.pdf}
+          title={activeScript.title}
+          onClose={() => setActiveScript(null)}
+        />
+      )}
     </PageOverlay>
   );
 }
