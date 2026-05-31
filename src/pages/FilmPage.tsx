@@ -21,7 +21,7 @@ const films: Film[] = [
       'Fazmagoo, a dimension-hopping cosmic wizard cursed with accompanying the most miserable people in the world, takes on Gregory — a deeply insecure man struggling to come to terms with the fact that his girlfriend\'s ex was extremely well-endowed.',
     role: 'Writer · Director · Producer',
     watch: { label: 'fazmagoo.com', href: 'https://www.fazmagoo.com' },
-    cover: '/images/updates/20-05-2026.png',
+    cover: '/images/updates/20-05-2026.webp',
     images: [],
   },
   {
@@ -48,8 +48,8 @@ const films: Film[] = [
     logline: 'A loss in the family tears apart a modern family.',
     role: 'Writer · Director · Production Design · Sound',
     watch: { label: 'Watch it here', href: 'https://youtu.be/p2vFvi7msWE' },
-    cover: '/images/films/answering-machine/answering-machine.png',
-    images: ['/images/films/answering-machine/answering-machine.png'],
+    cover: '/images/films/answering-machine/answering-machine.webp',
+    images: ['/images/films/answering-machine/answering-machine.webp'],
   },
   {
     title: 'Passion of the Chris',
@@ -62,11 +62,11 @@ const films: Film[] = [
       label: 'Watch on YouTube',
       href: 'https://www.youtube.com/watch?v=KS_vc3duufE',
     },
-    cover: '/images/films/potc/potc-1.png',
+    cover: '/images/films/potc/potc-1.webp',
     images: [
-      '/images/films/potc/potc-1.png',
-      '/images/films/potc/potc-2.png',
-      '/images/films/potc/potc-3.png',
+      '/images/films/potc/potc-1.webp',
+      '/images/films/potc/potc-2.webp',
+      '/images/films/potc/potc-3.webp',
     ],
   },
 ];
@@ -92,8 +92,8 @@ const promos: PromoSpot[] = [
     contribution: 'Writing · Producing · Directing',
     watch: { label: 'Watch it', href: 'https://youtu.be/nwbNu4qtC1k' },
     images: [
-      '/images/promo/daf/daf-thumbnail-1.png',
-      '/images/promo/daf/daf-thumbnail-2.png',
+      '/images/promo/daf/daf-thumbnail-1.webp',
+      '/images/promo/daf/daf-thumbnail-2.webp',
     ],
   },
   {

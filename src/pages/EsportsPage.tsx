@@ -42,7 +42,7 @@ export function EsportsPage() {
       <section className="mt-12 md:mt-16 grid lg:grid-cols-2 gap-8">
         <article className="rounded-2xl border border-[#41e1c7]/25 bg-white/[0.04] p-6 md:p-8">
           <img
-            src="/images/esports/burt-profile.png"
+            src="/images/esports/burt-profile.webp"
             alt="Burt Burlington profile"
             className="w-20 h-20 rounded-full object-cover border border-[#41e1c7]/30 mb-4"
           />
@@ -71,7 +71,7 @@ export function EsportsPage() {
         <article className="rounded-2xl border border-[#41e1c7]/25 bg-white/[0.04] overflow-hidden">
           <div className="aspect-video bg-black">
             <img
-              src="/images/esports/counter-shots.png"
+              src="/images/esports/counter-shots.webp"
               alt="Counter-Shots podcast key art"
               loading="lazy"
               className="block w-full h-full object-cover"
@@ -119,7 +119,7 @@ export function EsportsPage() {
       <section className="mt-12 md:mt-16">
         <article className="rounded-2xl border border-[#41e1c7]/25 bg-white/[0.04] p-6 md:p-8">
           <img
-            src="/images/esports/burlington-discord.png"
+            src="/images/esports/burlington-discord.webp"
             alt="Burlington's Big Shots Discord"
             className="w-full rounded-xl border border-[#41e1c7]/20 mb-5"
           />
