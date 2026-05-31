@@ -26,9 +26,11 @@ export function SceneCanvas() {
         shadow-camera-bottom={-4}
       />
       <directionalLight position={[-5, -3, -5]} intensity={0.35} color="#cfe8ff" />
-      <RotatingCube />
+      <group position={[0, -0.7, 0]}>
+        <RotatingCube />
+      </group>
       <ContactShadows
-        position={[0, -1.3, 0]}
+        position={[0, -2.0, 0]}
         opacity={0.45}
         scale={6}
         blur={2.8}
