@@ -23,8 +23,7 @@ const updates: Update[] = [
     image: '/images/updates/15-06-2026.png',
     title: 'Finished “My Joint with John” short film!',
     body:
-      'A film I co-wrote, produced, directed and edited is finally done — and it is my proudest achievement thus far. I got to work with so many great people and professionals that I look forward to working with again. I sadly can\'t show you the movie yet because it will be on a festival run for the foreseeable future, but for now, check out the teaser.',
-    link: { label: 'Watch the teaser', href: '#' },
+      'A film I co-wrote, produced, directed and edited is finally done — and it is my proudest achievement thus far. I got to work with so many great people and professionals that I look forward to working with again. I sadly can\'t show you the movie yet because it will be on a festival run for the foreseeable future.',
   },
   {
     date: '20-05-2026',

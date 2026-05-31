@@ -10,3 +10,12 @@ README.md
 docker-compose.yml
 Dockerfile
 .dockerignore
+
+# Not needed in the build context (keeps it small + avoids locked source files)
+Bart van de Steeg Website 2026 Content
+docs
+example
+.github
+OPEN-POINTS.md
+notes.md
+*.tsbuildinfo

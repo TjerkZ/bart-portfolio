@@ -8,22 +8,23 @@ interface FinishedScript {
   type: string;
   genre: string;
   logline: string;
+  pdf: string;
 }
 
 const finishedScripts: FinishedScript[] = [
-  { title: 'Locked up in Geezer Grove', year: '2025', type: 'Feature Film', genre: 'Drama, Comedy', logline: 'A depressed young man is placed under suicide watch but is held in the local nursery home for the elderly.' },
-  { title: 'Cabin in the Snow', year: '2020', type: 'Short Film', genre: 'Drama, Crime', logline: "A man flees from society to an isolated cabin, where he meets society's worst." },
-  { title: 'Carpe Diem, Bitch', year: '2019', type: 'Short Film', genre: 'Drama', logline: 'A bunch of youngsters feel like they are not getting enough out of life. But when they decide to go on an adventure this New Years Eve, they got more than they bargained for.' },
-  { title: "Dulken's Delusion", year: '2021', type: 'Short Film', genre: 'Drama, Horror', logline: 'A doctor realizes that he and the man who is hospitalized with a flesh-eating disease share more in common than he originally thought.' },
-  { title: 'Flat Earth Voyage', year: '2020', type: 'Feature Film', genre: 'Drama, Mockumentary', logline: "A somber boy decides to find his raison d'être by traveling to the edge of the world and video tape his entire journey to discover that the world, is indeed flat." },
-  { title: 'Innergenerational Sacrifice', year: '2022', type: 'Short Film', genre: 'Tragedy, Fantasy', logline: 'A family drama that involves all past family members and future, culminates into a fierce battle in the name of justice.' },
-  { title: 'Iron Rush', year: '2019', type: 'Short Film', genre: 'Drama, Romance, Historical', logline: 'A foreign army is marching towards the gates of the town, and to stand a chance, every man and child join the fight, while melting every piece of metal down to construct weapons in the fight.' },
-  { title: 'Lonely Son', year: '2022', type: 'Short Film', genre: 'Drama', logline: "A father worries about his son who hasn't been the same ever since he lost his mother." },
-  { title: 'Stavn Momman', year: '2022', type: 'Feature Film', genre: 'Horror, Thriller', logline: 'By maritime law, Captain Boomsma is prohibited from leaving the freight ship that is in the docks in Cairo. With all the crew back home to their families, Boomsma has to survive on the ship on rations and ingenuity. But something lurks beneath the waters that is aware that the Captain is now without a crew.' },
-  { title: 'The Isle of Nytruss', year: '2020', type: 'Feature Film', genre: 'Fantasy, Adventure', logline: 'To help out the people of village, the children investigate the island of Nytruss to find the reason why the vegetation of the island has grown black and dead, and uncover a secret that none of them dared to imagine.' },
-  { title: 'The Buyer and the Seller', year: '2025', type: 'Short Film', genre: 'Drama, Crime', logline: 'An arms dealer is skeptical of his buyer and gets into a conversation with him about life and death.' },
-  { title: 'Neanderthal', year: '2022', type: 'Short Film', genre: 'Tragedy', logline: 'A boy with an abnormally large forehead is teased, and his family want to do nothing else than to support him.' },
-  { title: 'Into the Wilderness', year: '2025', type: 'Short Film', genre: 'Action, Drama', logline: 'A man is cornered in his tent in the middle of the woods by a bear that wants nothing else than feast on his flesh.' },
+  { title: 'Locked up in Geezer Grove', year: '2025', type: 'Feature Film', genre: 'Drama, Comedy', pdf: '/scripts/locked-up-in-geezer-grove.pdf', logline: 'A depressed young man is placed under suicide watch but is held in the local nursery home for the elderly.' },
+  { title: 'Cabin in the Snow', year: '2020', type: 'Short Film', genre: 'Drama, Crime', pdf: '/scripts/cabin-in-the-snow.pdf', logline: "A man flees from society to an isolated cabin, where he meets society's worst." },
+  { title: 'Carpe Diem, Bitch', year: '2019', type: 'Short Film', genre: 'Drama', pdf: '/scripts/carpe-diem-bitch.pdf', logline: 'A bunch of youngsters feel like they are not getting enough out of life. But when they decide to go on an adventure this New Years Eve, they got more than they bargained for.' },
+  { title: "Dulken's Delusion", year: '2021', type: 'Short Film', genre: 'Drama, Horror', pdf: '/scripts/dulkens-delusion.pdf', logline: 'A doctor realizes that he and the man who is hospitalized with a flesh-eating disease share more in common than he originally thought.' },
+  { title: 'Flat Earth Voyage', year: '2020', type: 'Feature Film', genre: 'Drama, Mockumentary', pdf: '/scripts/flat-earth-voyage.pdf', logline: "A somber boy decides to find his raison d'être by traveling to the edge of the world and video tape his entire journey to discover that the world, is indeed flat." },
+  { title: 'Innergenerational Sacrifice', year: '2022', type: 'Short Film', genre: 'Tragedy, Fantasy', pdf: '/scripts/innergenerational-sacrifice.pdf', logline: 'A family drama that involves all past family members and future, culminates into a fierce battle in the name of justice.' },
+  { title: 'Iron Rush', year: '2019', type: 'Short Film', genre: 'Drama, Romance, Historical', pdf: '/scripts/iron-rush.pdf', logline: 'A foreign army is marching towards the gates of the town, and to stand a chance, every man and child join the fight, while melting every piece of metal down to construct weapons in the fight.' },
+  { title: 'Lonely Son', year: '2022', type: 'Short Film', genre: 'Drama', pdf: '/scripts/lonely-son.pdf', logline: "A father worries about his son who hasn't been the same ever since he lost his mother." },
+  { title: 'Stavn Momman', year: '2022', type: 'Feature Film', genre: 'Horror, Thriller', pdf: '/scripts/stavn-momman.pdf', logline: 'By maritime law, Captain Boomsma is prohibited from leaving the freight ship that is in the docks in Cairo. With all the crew back home to their families, Boomsma has to survive on the ship on rations and ingenuity. But something lurks beneath the waters that is aware that the Captain is now without a crew.' },
+  { title: 'The Isle of Nytruss', year: '2020', type: 'Feature Film', genre: 'Fantasy, Adventure', pdf: '/scripts/the-isle-of-nytruss.pdf', logline: 'To help out the people of village, the children investigate the island of Nytruss to find the reason why the vegetation of the island has grown black and dead, and uncover a secret that none of them dared to imagine.' },
+  { title: 'The Buyer and the Seller', year: '2025', type: 'Short Film', genre: 'Drama, Crime', pdf: '/scripts/the-buyer-and-the-seller.pdf', logline: 'An arms dealer is skeptical of his buyer and gets into a conversation with him about life and death.' },
+  { title: 'Neanderthal', year: '2022', type: 'Short Film', genre: 'Tragedy', pdf: '/scripts/neanderthal.pdf', logline: 'A boy with an abnormally large forehead is teased, and his family want to do nothing else than to support him.' },
+  { title: 'Into the Wilderness', year: '2025', type: 'Short Film', genre: 'Action, Drama', pdf: '/scripts/into-the-wilderness.pdf', logline: 'A man is cornered in his tent in the middle of the woods by a bear that wants nothing else than feast on his flesh.' },
 ];
 
 interface ProseStory {
@@ -46,7 +47,7 @@ const prose: ProseStory[] = [
 ];
 
 export function ScreenwritingPage() {
-  const [activeStory, setActiveStory] = useState<ProseStory | null>(null);
+  const [activeDoc, setActiveDoc] = useState<{ url: string; title: string } | null>(null);
 
   return (
     <PageOverlay
@@ -72,6 +73,13 @@ export function ScreenwritingPage() {
                 {s.type} · {s.genre}
               </p>
               <p className="mt-3 text-[#1a1a1a]/80 leading-relaxed">{s.logline}</p>
+              <button
+                type="button"
+                onClick={() => setActiveDoc({ url: s.pdf, title: s.title })}
+                className="inline-flex items-center gap-1.5 mt-4 px-4 py-2 rounded-full text-sm font-semibold bg-[#a04040] text-white hover:bg-[#8a3636] transition"
+              >
+                Read script <span aria-hidden>↗</span>
+              </button>
             </article>
           ))}
         </div>
@@ -88,7 +96,7 @@ export function ScreenwritingPage() {
             <article key={p.title} className="grid grid-cols-[auto_1fr] gap-5 items-start">
               <button
                 type="button"
-                onClick={() => setActiveStory(p)}
+                onClick={() => setActiveDoc({ url: p.pdf, title: p.title })}
                 className="block w-32 md:w-36 shrink-0 rounded-md overflow-hidden shadow-soft border border-[#1a1a1a]/12 bg-white hover:ring-2 hover:ring-[#a04040] transition"
                 aria-label={`Read ${p.title}`}
               >
@@ -101,7 +109,7 @@ export function ScreenwritingPage() {
                 <div className="flex flex-wrap items-center gap-4">
                   <button
                     type="button"
-                    onClick={() => setActiveStory(p)}
+                    onClick={() => setActiveDoc({ url: p.pdf, title: p.title })}
                     className="inline-flex items-center gap-1.5 mt-3 font-semibold text-[#a04040] hover:underline"
                   >
                     Read the story <span aria-hidden>↗</span>
@@ -118,11 +126,11 @@ export function ScreenwritingPage() {
         </div>
       </section>
 
-      {activeStory && (
+      {activeDoc && (
         <ScriptViewerLazy
-          url={activeStory.pdf}
-          title={activeStory.title}
-          onClose={() => setActiveStory(null)}
+          url={activeDoc.url}
+          title={activeDoc.title}
+          onClose={() => setActiveDoc(null)}
         />
       )}
     </PageOverlay>
