@@ -39,7 +39,7 @@ export function ComedyPage() {
       <section className="space-y-5">
         <div className="flex items-center gap-4">
           <img
-            src="/images/comedy/bad-writers-logo.png"
+            src="/images/comedy/bad-writers-logo.webp"
             alt="Bad Writers logo"
             className="w-16 h-16 rounded-xl object-cover border border-white/10"
           />
@@ -97,7 +97,7 @@ export function ComedyPage() {
 
       <section className="mt-16 grid md:grid-cols-[auto_1fr] gap-6 items-start">
         <img
-          src="/images/comedy/sketch-ideas.png"
+          src="/images/comedy/sketch-ideas.webp"
           alt="Sketch Ideas"
           className="w-full md:w-64 rounded-2xl object-cover border border-white/10"
         />
@@ -123,7 +123,7 @@ export function ComedyPage() {
       </section>
       <section className="mt-16 grid md:grid-cols-[auto_1fr] gap-6 items-start">
         <img
-          src="/images/comedy/ass-scratches-back.png"
+          src="/images/comedy/ass-scratches-back.webp"
           alt="Ass Scratches Back: The Movie title page"
           className="w-full md:w-56 rounded-2xl object-cover border border-white/10"
         />

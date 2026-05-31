@@ -19,6 +19,7 @@ const socials: Array<{ label: string; href: string; icon: string }> = [
   { label: 'X', href: 'https://x.com/BurtBurlington', icon: '/images/social/x.svg' },
   { label: 'Instagram', href: 'https://www.instagram.com/burt_burlington/', icon: '/images/social/instagram.svg' },
   { label: 'Letterboxd', href: 'https://letterboxd.com/Burt_Burlington/', icon: '/images/social/letterboxd.svg' },
+  { label: 'LinkedIn', href: 'https://www.linkedin.com/in/bart-van-de-steeg-0a65aa373/', icon: '/images/social/linkedin.svg' },
 ];
 
 export function AboutPage() {
@@ -58,7 +59,7 @@ export function AboutPage() {
           <div className="mt-5 space-y-4 text-ink/85 leading-relaxed">
             <figure className="float-right ml-5 mb-3 w-36 md:w-44">
               <img
-                src="/images/about/bart.png"
+                src="/images/about/bart.jpg"
                 alt="Bart van de Steeg"
                 className="w-full rounded-xl object-cover border border-ink/10 shadow-soft"
               />
@@ -81,7 +82,7 @@ export function AboutPage() {
           <div className="mt-5 space-y-4 text-ink/85 leading-relaxed">
             <figure className="float-right ml-5 mb-3 w-36 md:w-44">
               <img
-                src="/images/about/burt.png"
+                src="/images/about/burt.jpg"
                 alt="Burt Burlington"
                 className="w-full rounded-xl object-cover border border-ink/10 shadow-soft"
               />
