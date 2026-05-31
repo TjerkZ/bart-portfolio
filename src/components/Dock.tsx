@@ -6,6 +6,7 @@ export function Dock() {
   return (
     <nav
       aria-label="Site sections"
+      data-site-chrome
       className="fixed left-1/2 -translate-x-1/2 bottom-4 md:bottom-6 z-40 max-w-[calc(100vw-1rem)]"
     >
       <div className="flex gap-1 p-2 rounded-3xl bg-white/80 backdrop-blur-md border border-white/60 shadow-soft overflow-x-auto">

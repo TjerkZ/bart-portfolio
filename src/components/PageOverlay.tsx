@@ -94,6 +94,7 @@ function BackPill({ vibe }: { vibe: FaceId }) {
   return (
     <Link
       to="/"
+      data-site-chrome
       className={[
         'fixed top-5 left-5 z-40 inline-flex items-center gap-2',
         'px-4 py-2 rounded-full backdrop-blur-md shadow-soft',

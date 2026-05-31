@@ -5,7 +5,10 @@ import { Vector3 } from 'three';
 import { findFaceByPath } from './faces';
 
 const IDLE_POS = new Vector3(4.5, 3.2, 5.5);
-const IDLE_LOOK = new Vector3(0, 0, 0);
+// Look slightly above the cube's centre on the landing view so the cube sits
+// lower on screen (leaving room for the big name on top), without shifting the
+// cube geometry — which would throw off the per-face zoom centring.
+const IDLE_LOOK = new Vector3(0, 0.7, 0);
 const FACE_DISTANCE = 4.5;
 const FACE_TILT = 0.7;
 /** Seconds for the camera to orbit from one viewpoint to the next. */

@@ -22,13 +22,18 @@ export function ScriptViewer({ url, title, onClose }: ScriptViewerProps) {
   const [page, setPage] = useState(1);
   const [error, setError] = useState<string | null>(null);
 
-  // Close on Escape; lock body scroll while open.
+  // Close on Escape; hide site chrome (dock + back pill) while open so the
+  // viewer's own title bar and page navigation aren't covered by it.
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') onClose();
     };
     window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
+    document.body.classList.add('script-viewer-open');
+    return () => {
+      window.removeEventListener('keydown', onKey);
+      document.body.classList.remove('script-viewer-open');
+    };
   }, [onClose]);
 
   const go = (delta: number) =>

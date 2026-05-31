@@ -107,3 +107,8 @@ canvas {
     );
   }
 }
+
+/* Hide the site dock + back-pill while the PDF script viewer is open */
+body.script-viewer-open [data-site-chrome] {
+  display: none;
+}
