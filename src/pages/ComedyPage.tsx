@@ -33,7 +33,6 @@ export function ComedyPage() {
   return (
     <PageOverlay
       vibe="comedy"
-      kicker="World 05 · Comedy"
       title={'Live, Laugh, Laugh again.'}
       lede="Comedy has been a large part of my life, professionally, personally, artistically. Life mostly boils down to having a laugh, and I believe that in everything I do."
     >
@@ -164,7 +163,7 @@ export function ComedyPage() {
             The Bad Writers Podcast
           </h2>
           <p className="mt-3 text-[#fff5d1]/85 leading-relaxed max-w-2xl">
-            A podcast about writing, film and comedy. New episodes when we stop arguing about what to call them.
+            A podcast about writing, film and comedy. We discuss story structure, character development, and going to film school.
           </p>
           <a
             href="https://youtu.be/6FG7Y-NfelY"

@@ -9,18 +9,18 @@ const stats: Array<[string, string]> = [
   ['REGION', 'EU'],
 ];
 
-const videos: Array<{ title: string; href: string }> = [
-  { title: 'Counter Strike is the Chess of Esports', href: 'https://youtu.be/KldFpSdXNNs' },
-  { title: 'Was Elige the PROBLEM in FaZe Clan?', href: 'https://www.youtube.com/watch?v=c6te8szuG7c' },
-  { title: 'Find your Counter Strike Team! 40+ Teams Explained', href: 'https://youtu.be/VRzvx9P2-js' },
+const videos: Array<{ title: string; href: string; thumb: string }> = [
+  { title: 'Counter Strike is the Chess of Esports', href: 'https://youtu.be/KldFpSdXNNs', thumb: '/images/esports/thumbs/chess-of-esports.jpg' },
+  { title: 'Was Elige the PROBLEM in FaZe Clan?', href: 'https://www.youtube.com/watch?v=c6te8szuG7c', thumb: '/images/esports/thumbs/elige.jpg' },
+  { title: 'Find your Counter Strike Team! 40+ Teams Explained', href: 'https://youtu.be/VRzvx9P2-js', thumb: '/images/esports/thumbs/find-your-team.jpg' },
 ];
 
 export function EsportsPage() {
   return (
     <PageOverlay
       vibe="esports"
-      kicker="World 06 · Esports"
       title={'I love talking about Counter Strike, and if you do too, consider subscribing!'}
+      titleClassName="text-3xl md:text-4xl lg:text-5xl"
       lede="A lifetime Counter-Strike obsession turned into a YouTube channel, a podcast, and a discord. Below: the live numbers and what's playing."
     >
       <section className="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-4">
@@ -102,19 +102,13 @@ export function EsportsPage() {
       </section>
 
       <section className="mt-12 md:mt-16">
-        <p className="font-mono text-[10px] tracking-[0.22em] uppercase text-[#41e1c7] mb-4">
-          Watch now
-        </p>
+        <h2 className="font-display font-black text-3xl md:text-4xl text-[#d8e7ff] mb-4">Watch Now</h2>
         <ul className="rounded-2xl border border-[#41e1c7]/25 bg-white/[0.04] overflow-hidden divide-y divide-white/10">
           {videos.map((v) => (
             <li key={v.href}>
-              <a
-                href={v.href}
-                target="_blank"
-                rel="noreferrer"
-                className="flex items-baseline justify-between gap-4 px-5 py-5 hover:bg-white/[0.05] transition"
-              >
-                <span className="font-display font-bold text-lg md:text-xl text-[#d8e7ff]">{v.title}</span>
+              <a href={v.href} target="_blank" rel="noreferrer" className="flex items-center gap-4 px-4 py-4 hover:bg-white/[0.05] transition">
+                <img src={v.thumb} alt="" className="w-28 md:w-40 aspect-video object-cover rounded-md shrink-0" />
+                <span className="font-display font-bold text-lg md:text-xl text-[#d8e7ff] flex-1">{v.title}</span>
                 <span className="font-semibold text-[#41e1c7] shrink-0">watch ↗</span>
               </a>
             </li>

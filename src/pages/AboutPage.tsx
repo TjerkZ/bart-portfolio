@@ -27,7 +27,6 @@ export function AboutPage() {
   return (
     <PageOverlay
       vibe="about"
-      kicker="World 02 · About & Contact"
       title={'Who is\nBart?'}
     >
       <section className="max-w-3xl">
@@ -57,12 +56,17 @@ export function AboutPage() {
 
         {persona === 'bart' ? (
           <div className="mt-5 space-y-4 text-ink/85 leading-relaxed">
+            <img
+              src="/images/about/bart.png"
+              alt="Bart van de Steeg"
+              className="float-right ml-5 mb-3 w-36 md:w-44 rounded-xl object-cover border border-ink/10 shadow-soft"
+            />
             <p>My name is Bart van de Steeg, though many people know me by my YouTube and stage name: &ldquo;Burt Burlington.&rdquo;</p>
-            <p>Born in the Netherlands, I realized early on that I wanted to tell stories — my stories, funny stories, epic stories, people&rsquo;s stories, and occasionally funny-epic-people stories.</p>
+            <p>Born in the Netherlands, I realized early on that I wanted to tell stories: my stories, funny stories, epic stories, people&rsquo;s stories, and occasionally funny-epic-people stories.</p>
             <p>And I tell them through every medium I can get my hands on: prose writing, screenwriting, filmmaking, presenting, graphic design, stand-up comedy, animation, and more. If there&rsquo;s a way to communicate an idea, I want to experiment with it.</p>
             <p>I studied audiovisual design and animation, alongside creative writing and filmmaking at university, building a foundation that blends visual storytelling with performance and narrative craft.</p>
             <p>Most recently, I&rsquo;ve been telling stories through film with my short film <em>My Joint with John</em> (2025), which I wrote, produced, and directed.</p>
-            <p>I&rsquo;ve also started telling the stories in esports: the organizations, the players, the unseen moments behind the scenes — all with the goal of informing, entertaining, and building hype for both new and longtime Counter-Strike audiences.</p>
+            <p>I&rsquo;ve also started telling the stories in esports: the organizations, the players, the unseen moments behind the scenes, all with the goal of informing, entertaining, and building hype for both new and longtime Counter-Strike audiences.</p>
             <p>When people ask me, &ldquo;What makes you different?&rdquo; my first instinct is usually to mumble a passive-aggressive question about what makes <em>them</em> so different...</p>
             <p>But after cooling down, I&rsquo;d say this:</p>
             <p>Ever since I was young, I was, for better or worse, a little bit different. I struggled to fit in because I never seemed to instinctively understand what people were supposed to like, say, or be like.</p>
@@ -70,11 +74,16 @@ export function AboutPage() {
           </div>
         ) : (
           <div className="mt-5 space-y-4 text-ink/85 leading-relaxed">
+            <img
+              src="/images/about/burt.png"
+              alt="Burt Burlington"
+              className="float-right ml-5 mb-3 w-36 md:w-44 rounded-xl object-cover border border-ink/10 shadow-soft"
+            />
             <p>I look a lot like the other guy, but trust me, we&rsquo;re completely different.</p>
             <p>Where Bart is a screenwriter and filmmaker with an interest in comedy and esports, I&rsquo;m a comedy writer and esports pundit with interests in screenwriting and filmmaking. A subtle but important distinction.</p>
             <p>I&rsquo;m one half of the comedy duo <em>Bad Writers</em>, where I wrote, acted, filmed, and edited our sketches.</p>
             <p>And I&rsquo;m 100% of <em>Burt Burlington</em>: creating Counter-Strike and esports content designed to build excitement around tournaments, teams, players, rivalries, storylines, matches, and the beautiful chaos surrounding them.</p>
-            <p>The goal has always been simple: make sure both longtime fans and brand-new viewers know what&rsquo;s happening — and get hyped about it.</p>
+            <p>The goal has always been simple: make sure both longtime fans and brand-new viewers know what&rsquo;s happening, and get hyped about it.</p>
             <p>Stand-up comedy has been a passion of mine for over a decade, even though it was the last discipline I seriously stepped into.</p>
             <p>And honestly, it makes sense. Stand-up is the one art form where everything I love collides: writing, comedy, storytelling, performance, timing, and presenting.</p>
             <p>Which is convenient, because I apparently built my entire life preparing for it by accident.</p>

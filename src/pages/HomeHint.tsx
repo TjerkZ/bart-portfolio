@@ -12,22 +12,13 @@ export function HomeHint() {
     >
       {/* Centered brand name — sized to match the section label */}
       <div className="fixed inset-x-0 top-6 md:top-8 z-10 flex justify-center pointer-events-none px-4">
-        <h1 className="font-display font-black text-3xl md:text-5xl text-ink leading-none text-center drop-shadow-[0_2px_0_rgba(255,255,255,0.7)]">
+        <h1 className="font-display font-black text-5xl md:text-7xl text-ink leading-none text-center drop-shadow-[0_2px_0_rgba(255,255,255,0.7)]">
           Bart van de Steeg
           <span className="text-[#ff5470]">.</span>
         </h1>
       </div>
 
       <FaceTitleHUD />
-
-      {/* Top-right status */}
-      <div className="absolute top-5 right-5 pointer-events-auto inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/80 backdrop-blur-md border border-white/60 shadow-soft text-xs md:text-sm font-semibold text-ink">
-        <span className="relative flex w-2 h-2">
-          <span className="absolute inset-0 rounded-full bg-emerald-500/40 animate-ping" />
-          <span className="relative rounded-full bg-emerald-500 w-2 h-2" />
-        </span>
-        6 worlds
-      </div>
 
       {/* Bottom hint, above the Dock */}
       <div className="absolute left-1/2 -translate-x-1/2 bottom-32 md:bottom-36 pointer-events-auto inline-flex items-center gap-3 px-5 py-2.5 rounded-full bg-white/80 backdrop-blur-md border border-white/60 shadow-soft text-xs md:text-sm font-medium text-ink-soft whitespace-nowrap">
