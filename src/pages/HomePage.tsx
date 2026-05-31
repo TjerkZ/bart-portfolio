@@ -1,5 +1,14 @@
 import { PageOverlay } from '../components/PageOverlay';
 
+const cringe: Array<[string, string]> = [
+  ['C', 'Comedian'],
+  ['R', 'Raconteur Podcaster'],
+  ['I', 'Indie Filmmaker'],
+  ['N', 'Narrative Writer & Screenwriter'],
+  ['G', 'Gag-writer'],
+  ['E', 'Esports Pundit'],
+];
+
 interface Update {
   date: string;
   image: string;
@@ -79,6 +88,7 @@ const updates: Update[] = [
     title: 'Burlington Apps software company launched',
     body:
       'Bart van de Steeg and Tjerk Zeilstra started a software development company with one goal: making life more fun and easier for our users. Burlington Apps is built of young and hungry professionals across diverse fields who want to embrace the future by way of apps.',
+    link: { label: 'burlingtonapps.nl', href: 'https://www.burlingtonapps.nl' },
   },
 ];
 
@@ -96,14 +106,14 @@ export function HomePage() {
           Good question. I don't know.
         </p>
         <p className="mt-3 text-ink/80 leading-relaxed">I would say I am:</p>
-        <ul className="mt-2 space-y-1 text-ink/85">
-          <li>· Comedian</li>
-          <li>· Raconteur Podcaster</li>
-          <li>· Indie Filmmaker</li>
-          <li>· Narrative Writer &amp; Screenwriter</li>
-          <li>· Gag-writer</li>
-          <li>· Esports Pundit</li>
-        </ul>
+        <dl className="mt-3 rounded-2xl border border-ink/10 bg-white/70 backdrop-blur-sm shadow-soft p-6 md:p-8 space-y-3 max-w-md">
+          {cringe.map(([letter, role]) => (
+            <div key={letter} className="flex items-baseline gap-4">
+              <dt className="font-display font-black text-3xl md:text-4xl text-[#d4732d] w-8">{letter}</dt>
+              <dd className="text-ink/85 text-lg">{role}</dd>
+            </div>
+          ))}
+        </dl>
         <p className="mt-4 text-ink/80 leading-relaxed">
           Otherwise known as <strong>&lsquo;C.R.I.N.G.E.&rsquo;</strong>
         </p>
