@@ -31,7 +31,6 @@ const films: Film[] = [
     logline:
       'Following a devastating pitch, a struggling writer smokes a joint with his best friend — leading to a conversation that alters their lives forever.',
     role: 'Co-writer · Producer · Director · Editor',
-    watch: { label: 'Watch the teaser', href: '#' },
     cover: '/images/films/mjwj/mjwj-1.jpeg',
     images: [
       '/images/films/mjwj/mjwj-1.jpeg',

@@ -9,8 +9,8 @@ const studies: Array<[string, string]> = [
 ];
 
 const internships: string[] = [
-  'Vrijwerkers — content making',
-  'BLD Media — content making',
+  'Vrijwerkers — Content Making',
+  'BLD Media — Content Making',
   'Peelpioniers — Media Manager',
 ];
 
@@ -56,11 +56,16 @@ export function AboutPage() {
 
         {persona === 'bart' ? (
           <div className="mt-5 space-y-4 text-ink/85 leading-relaxed">
-            <img
-              src="/images/about/bart.png"
-              alt="Bart van de Steeg"
-              className="float-right ml-5 mb-3 w-36 md:w-44 rounded-xl object-cover border border-ink/10 shadow-soft"
-            />
+            <figure className="float-right ml-5 mb-3 w-36 md:w-44">
+              <img
+                src="/images/about/bart.png"
+                alt="Bart van de Steeg"
+                className="w-full rounded-xl object-cover border border-ink/10 shadow-soft"
+              />
+              <figcaption className="mt-2 text-center font-display font-bold text-sm text-ink">
+                Bart van de Steeg
+              </figcaption>
+            </figure>
             <p>My name is Bart van de Steeg, though many people know me by my YouTube and stage name: &ldquo;Burt Burlington.&rdquo;</p>
             <p>Born in the Netherlands, I realized early on that I wanted to tell stories: my stories, funny stories, epic stories, people&rsquo;s stories, and occasionally funny-epic-people stories.</p>
             <p>And I tell them through every medium I can get my hands on: prose writing, screenwriting, filmmaking, presenting, graphic design, stand-up comedy, animation, and more. If there&rsquo;s a way to communicate an idea, I want to experiment with it.</p>
@@ -74,11 +79,16 @@ export function AboutPage() {
           </div>
         ) : (
           <div className="mt-5 space-y-4 text-ink/85 leading-relaxed">
-            <img
-              src="/images/about/burt.png"
-              alt="Burt Burlington"
-              className="float-right ml-5 mb-3 w-36 md:w-44 rounded-xl object-cover border border-ink/10 shadow-soft"
-            />
+            <figure className="float-right ml-5 mb-3 w-36 md:w-44">
+              <img
+                src="/images/about/burt.png"
+                alt="Burt Burlington"
+                className="w-full rounded-xl object-cover border border-ink/10 shadow-soft"
+              />
+              <figcaption className="mt-2 text-center font-display font-bold text-sm text-ink">
+                Burt Burlington
+              </figcaption>
+            </figure>
             <p>I look a lot like the other guy, but trust me, we&rsquo;re completely different.</p>
             <p>Where Bart is a screenwriter and filmmaker with an interest in comedy and esports, I&rsquo;m a comedy writer and esports pundit with interests in screenwriting and filmmaking. A subtle but important distinction.</p>
             <p>I&rsquo;m one half of the comedy duo <em>Bad Writers</em>, where I wrote, acted, filmed, and edited our sketches.</p>
