@@ -6,13 +6,13 @@ asset or decision is still missing. Resolve these and tick them off.
 ## Missing assets
 
 - [ ] **About & Contact cube-face background texture** — The change doc says the
-  new background was "doorgestuurd via Discord", but the file is **not** in
-  `Bart van de Steeg Website 2026 Content/Aanpassingen fotos/`. Until it is
-  delivered, the About face keeps its current texture
-  (`public/textures/About_me_contact.png`, referenced in
-  [src/scene/faces.ts](src/scene/faces.ts)).
-  **To resolve:** drop the file into `public/textures/`, then update the
-  `texture:` field of the `about` face in `src/scene/faces.ts`.
+  new background was "doorgestuurd via Discord", but no new file was delivered.
+  The `about` face is currently wired to the existing
+  `public/textures/About_me_contact.png` (referenced in
+  [src/scene/faces.ts](src/scene/faces.ts)), so the face renders fine as-is.
+  **To resolve:** if the client delivers a higher-res "About me contact.png", it
+  should replace `public/textures/About_me_contact.png` directly (same filename,
+  no code change needed).
 
 ## Notes
 
