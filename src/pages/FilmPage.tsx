@@ -71,6 +71,72 @@ const films: Film[] = [
   },
 ];
 
+interface CrewEntry {
+  title: string;
+  year: string;
+  status?: string;
+  logline?: string;
+  role: string;
+  watch?: { label: string; href: string };
+  images?: string[];
+  youtubeId?: string;
+}
+
+const crew: CrewEntry[] = [
+  {
+    title: 'Joy',
+    year: '2025',
+    status: 'Festival run',
+    logline: 'A dystopian world where sadness is outlawed.',
+    role: 'Third assistant director · Gaffer',
+    images: [
+      '/images/films/joy/joy-3rd-ad.png',
+      '/images/films/joy/joy-gaffing.png',
+    ],
+  },
+  {
+    title: 'Strings of the Innocent',
+    year: '2024',
+    logline:
+      'An elderly man, tormented by the loss of his daughter, finds fleeting solace in a new prescription, slipping irretrievably into a world where she still feels alive, until…',
+    role: 'Gaffer',
+    watch: {
+      label: 'Watch on Grey Creations',
+      href: 'https://www.grey-creations.com/strings-of-the-innocent',
+    },
+    images: [
+      '/images/films/soi/soi-1.png',
+      '/images/films/soi/soi-2.png',
+      '/images/films/soi/soi-3.png',
+      '/images/films/soi/soi-4.png',
+      '/images/films/soi/soi-5.png',
+      '/images/films/soi/soi-6.png',
+    ],
+  },
+  {
+    title: 'Kings & Pills — End of the World',
+    year: '2024',
+    status: 'Music video',
+    role: 'Second AC',
+    youtubeId: 'ZAMQf38ih_4',
+    watch: {
+      label: 'Watch on YouTube',
+      href: 'https://www.youtube.com/watch?v=ZAMQf38ih_4',
+    },
+  },
+  {
+    title: 'Xava Shoya — Nero',
+    year: '2024',
+    status: 'Official music video',
+    role: 'Gaffer',
+    youtubeId: 'nfVmZl1ygL4',
+    watch: {
+      label: 'Watch on YouTube',
+      href: 'https://www.youtube.com/watch?v=nfVmZl1ygL4',
+    },
+  },
+];
+
 interface PromoSpot {
   client: string;
   year: string;
@@ -147,6 +213,54 @@ function FilmEntry({ f }: { f: Film }) {
   );
 }
 
+function CrewCard({ c }: { c: CrewEntry }) {
+  return (
+    <article className="rounded-2xl bg-white/[0.04] border border-white/10 overflow-hidden">
+      {c.youtubeId ? (
+        <div className="aspect-video bg-black">
+          <iframe
+            src={`https://www.youtube.com/embed/${c.youtubeId}`}
+            title={c.title}
+            className="w-full h-full"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowFullScreen
+          />
+        </div>
+      ) : c.images && c.images.length > 0 ? (
+        <Carousel images={c.images} alt={c.title} />
+      ) : null}
+      <div className="p-5 md:p-6 space-y-3">
+        <div className="flex flex-wrap items-baseline gap-x-6 gap-y-1">
+          <h3 className="font-display font-bold text-xl md:text-2xl">{c.title}</h3>
+          <span className="font-mono text-[10px] tracking-[0.2em] uppercase text-[#e8b94a]">
+            {c.year}
+            {c.status && ` · ${c.status}`}
+          </span>
+        </div>
+        {c.logline && (
+          <p className="text-[#f6f1e6]/80 leading-relaxed max-w-3xl">{c.logline}</p>
+        )}
+        <p className="font-mono text-xs text-[#f6f1e6]/55 uppercase tracking-wider">
+          {c.role}
+          {c.watch && !c.youtubeId && (
+            <>
+              {' · '}
+              <a
+                href={c.watch.href}
+                target="_blank"
+                rel="noreferrer"
+                className="text-[#e8b94a] hover:underline"
+              >
+                {c.watch.label} ↗
+              </a>
+            </>
+          )}
+        </p>
+      </div>
+    </article>
+  );
+}
+
 export function FilmPage() {
   return (
     <PageOverlay
@@ -161,6 +275,20 @@ export function FilmPage() {
         {films.map((f) => (
           <FilmEntry key={f.title} f={f} />
         ))}
+      </section>
+
+      <section className="mt-20">
+        <h2 className="font-display text-3xl md:text-4xl font-bold mb-2">
+          Crew & Camera
+        </h2>
+        <p className="text-[#f6f1e6]/60 mb-8 max-w-2xl">
+          Projects where I worked on set in technical roles — gaffer, AC, AD.
+        </p>
+        <div className="space-y-10">
+          {crew.map((c) => (
+            <CrewCard key={c.title} c={c} />
+          ))}
+        </div>
       </section>
 
       <section className="mt-20">
