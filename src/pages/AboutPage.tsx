@@ -1,5 +1,9 @@
 import { useState } from 'react';
 import { PageOverlay } from '../components/PageOverlay';
+import { ScriptViewerLazy } from '../components/ScriptViewerLazy';
+
+const CV_URL = '/cv/bart-van-de-steeg-cv.pdf';
+const CV_TITLE = 'Bart van de Steeg — CV';
 
 const studies: Array<[string, string]> = [
   ['SintLucas', 'Audiovisual Design & Animation'],
@@ -24,6 +28,7 @@ const socials: Array<{ label: string; href: string; icon: string }> = [
 
 export function AboutPage() {
   const [persona, setPersona] = useState<'bart' | 'burt'>('bart');
+  const [cvOpen, setCvOpen] = useState(false);
 
   return (
     <PageOverlay
@@ -102,6 +107,44 @@ export function AboutPage() {
         )}
       </section>
 
+      <section className="mt-8 md:mt-10 max-w-3xl">
+        <button
+          type="button"
+          onClick={() => setCvOpen(true)}
+          className="inline-flex items-center gap-2 rounded-full border border-ink/15 bg-white/70 px-4 py-2 font-semibold text-ink hover:bg-white transition"
+        >
+          <span aria-hidden>📄</span> View CV
+        </button>
+      </section>
+
+      <section className="mt-12 md:mt-16 max-w-3xl">
+        <h2 className="font-display font-black text-3xl md:text-4xl">Want to reach out?</h2>
+        <p className="mt-3 text-ink/80 leading-relaxed">Exciting!</p>
+        <p className="mt-1 text-ink/80 leading-relaxed">
+          Let me know any questions you have. Or if you would like to read or watch any of my work, feel free to reach out:
+        </p>
+        <div className="mt-5 flex flex-wrap items-center gap-3">
+          <a
+            href="mailto:bartvdsteeg@hotmail.nl"
+            className="inline-flex items-center gap-2 rounded-full border border-ink/15 bg-white/70 px-4 py-2 font-semibold text-ink hover:bg-white transition"
+          >
+            <span aria-hidden>✉</span> Email me
+          </a>
+          {socials.map((s) => (
+            <a
+              key={s.label}
+              href={s.href}
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex items-center gap-2 rounded-full border border-ink/15 bg-white/70 px-4 py-2 font-semibold text-ink hover:bg-white transition"
+            >
+              <img src={s.icon} alt="" className="w-5 h-5" />
+              {s.label}
+            </a>
+          ))}
+        </div>
+      </section>
+
       <section className="mt-12 md:mt-16 grid md:grid-cols-2 gap-8">
         <div>
           <h3 className="text-[11px] font-bold tracking-[0.24em] uppercase text-ink-soft mb-4">
@@ -130,33 +173,13 @@ export function AboutPage() {
         </div>
       </section>
 
-      <section className="mt-12 md:mt-16 max-w-3xl">
-        <h2 className="font-display font-black text-3xl md:text-4xl">Want to reach out?</h2>
-        <p className="mt-3 text-ink/80 leading-relaxed">Exciting!</p>
-        <p className="mt-1 text-ink/80 leading-relaxed">
-          Let me know any questions you have. Or if you would like to read or watch any of my work, feel free to reach out to me at:
-        </p>
-        <p className="mt-4 text-ink/85">
-          Email:{' '}
-          <a href="mailto:bartvdsteeg@hotmail.nl" className="font-semibold text-[#b27a3e] hover:underline">
-            bartvdsteeg@hotmail.nl
-          </a>
-        </p>
-        <div className="mt-5 flex flex-wrap gap-3">
-          {socials.map((s) => (
-            <a
-              key={s.label}
-              href={s.href}
-              target="_blank"
-              rel="noreferrer"
-              className="inline-flex items-center gap-2 rounded-full border border-ink/15 bg-white/70 px-4 py-2 font-semibold text-ink hover:bg-white transition"
-            >
-              <img src={s.icon} alt="" className="w-5 h-5" />
-              {s.label}
-            </a>
-          ))}
-        </div>
-      </section>
+      {cvOpen && (
+        <ScriptViewerLazy
+          url={CV_URL}
+          title={CV_TITLE}
+          onClose={() => setCvOpen(false)}
+        />
+      )}
     </PageOverlay>
   );
 }
