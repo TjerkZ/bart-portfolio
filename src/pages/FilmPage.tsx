@@ -8,6 +8,10 @@ interface Film {
   logline: string;
   role: string;
   watch?: { label: string; href: string };
+  /** Extra links listed below the role (press kit, festival pages, …). */
+  links?: Array<{ label: string; href: string }>;
+  /** YouTube video shown as the first carousel slide. */
+  youtubeId?: string;
   images: string[];
   cover: string;
 }
@@ -26,11 +30,16 @@ const films: Film[] = [
   },
   {
     title: 'My Joint with John',
-    year: '2025',
+    year: '2027',
     status: 'Festival run',
     logline:
       'Following a devastating pitch, a struggling writer smokes a joint with his best friend — leading to a conversation that alters their lives forever.',
     role: 'Co-writer · Producer · Director · Editor',
+    links: [
+      { label: 'Press Kit (PDF)', href: '/press/MyJointWithJohn_PressKit.pdf' },
+      { label: 'FilmFreeway', href: 'https://filmfreeway.com/projects/4470794' },
+    ],
+    youtubeId: '9jcXx6_ajdI',
     cover: '/images/films/mjwj/mjwj-1.jpeg',
     images: [
       '/images/films/mjwj/mjwj-1.jpeg',
@@ -195,7 +204,7 @@ function FilmEntry({ f }: { f: Film }) {
   const gallery = f.images.length > 0 ? f.images : [f.cover];
   return (
     <article className="space-y-4">
-      <Carousel images={gallery} alt={f.title} />
+      <Carousel images={gallery} alt={f.title} youtubeId={f.youtubeId} />
       <div className="flex flex-wrap items-baseline justify-between gap-3">
         <h3 className="font-display font-black text-3xl md:text-4xl">{f.title}</h3>
         <p className="font-mono text-xs text-[#e8b94a] uppercase tracking-[0.18em]">
@@ -204,6 +213,17 @@ function FilmEntry({ f }: { f: Film }) {
       </div>
       <p className="text-[#f6f1e6]/80 leading-relaxed max-w-3xl">{f.logline}</p>
       <p className="font-mono text-xs text-[#f6f1e6]/55 uppercase tracking-wider">{f.role}</p>
+      {f.links && (
+        <ul className="space-y-1">
+          {f.links.map((l) => (
+            <li key={l.href}>
+              <a href={l.href} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 font-semibold text-[#e8b94a] hover:underline">
+                {l.label} <span aria-hidden>↗</span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      )}
       {f.watch && (
         <a href={f.watch.href} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 font-semibold text-[#e8b94a] hover:underline">
           {f.watch.label} <span aria-hidden>↗</span>

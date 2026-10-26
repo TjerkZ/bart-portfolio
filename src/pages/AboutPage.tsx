@@ -9,6 +9,7 @@ const studies: Array<[string, string]> = [
   ['SintLucas', 'Audiovisual Design & Animation'],
   ['South Gate', 'Creative Writing'],
   ['BIMM Berlin', 'Filmmaking'],
+  ['Fontys', 'Applied Psychology'],
   ['IELTS', 'English Certificate'],
 ];
 
@@ -24,6 +25,7 @@ const socials: Array<{ label: string; href: string; icon: string }> = [
   { label: 'Instagram', href: 'https://www.instagram.com/burt_burlington/', icon: '/images/social/instagram.svg' },
   { label: 'Letterboxd', href: 'https://letterboxd.com/Burt_Burlington/', icon: '/images/social/letterboxd.svg' },
   { label: 'LinkedIn', href: 'https://www.linkedin.com/in/bart-van-de-steeg-0a65aa373/', icon: '/images/social/linkedin.svg' },
+  { label: 'FilmFreeway', href: 'https://filmfreeway.com/BartvandeSteeg', icon: '/images/social/filmfreeway.svg' },
 ];
 
 export function AboutPage() {
